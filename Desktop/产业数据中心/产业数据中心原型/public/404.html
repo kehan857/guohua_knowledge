@@ -4,81 +4,63 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>产业数据中心 - 页面未找到</title>
-  <!-- 缓存强制更新: 2025-01-26 13:50:00 -->
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      color: white;
     }
     .container {
       text-align: center;
-      max-width: 500px;
       padding: 2rem;
     }
-    .logo {
-      font-size: 4rem;
-      margin-bottom: 1rem;
+    .error-code {
+      font-size: 8rem;
+      font-weight: bold;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      font-weight: 300;
-    }
-    p {
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
+    .error-message {
+      font-size: 1.5rem;
+      margin: 1rem 0;
       opacity: 0.9;
     }
-    .btn {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      padding: 12px 24px;
-      border-radius: 25px;
-      text-decoration: none;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+    .back-home {
       display: inline-block;
+      padding: 12px 24px;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      margin-top: 2rem;
     }
-    .btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      border-color: rgba(255, 255, 255, 0.5);
+    .back-home:hover {
+      background: rgba(255,255,255,0.3);
       transform: translateY(-2px);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo">🧠</div>
-    <h1>页面正在加载中...</h1>
-    <p>产业数据中心正在为您准备内容，请稍候片刻。</p>
-    <a href="/Industrial-Data-Center/" class="btn">返回首页</a>
+    <h1 class="error-code">404</h1>
+    <p class="error-message">页面未找到</p>
+    <p style="opacity: 0.8;">您访问的页面可能已被删除或不存在</p>
+    <a href="/Industrial-Data-Center/" class="back-home">返回首页</a>
   </div>
-
+  
   <script>
-    // SPA路由重定向逻辑
-    (function() {
-      var redirect = sessionStorage.redirect;
-      delete sessionStorage.redirect;
-      if (redirect && redirect !== location.href) {
-        history.replaceState(null, null, redirect);
-      }
-    })();
-
-    // 将当前路径保存到 sessionStorage，以便SPA应用处理
-    sessionStorage.redirect = location.href;
-    
-    // 自动跳转到主应用
-    setTimeout(function() {
+    // 自动重定向到首页（适用于SPA应用）
+    setTimeout(() => {
       window.location.href = '/Industrial-Data-Center/';
-    }, 1000);
+    }, 3000);
   </script>
 </body>
 </html> 

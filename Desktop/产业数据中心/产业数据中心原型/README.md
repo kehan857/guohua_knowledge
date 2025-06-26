@@ -1,229 +1,232 @@
-# 🧠 产业数据中心 (Industrial Data Center)
+# 天云聚合产业数据中心
 
-[![Deploy to GitHub Pages](https://github.com/kehan857/Industrial-Data-Center/actions/workflows/deploy.yml/badge.svg)](https://github.com/kehan857/Industrial-Data-Center/actions/workflows/deploy.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Vue 3](https://img.shields.io/badge/Vue-3.4-4FC08D?logo=vue.js)](https://vuejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+## 项目概述
 
-天云聚合产业数据中心 - 构建智慧产业生态，赋能数字经济发展
+天云聚合产业数据中心是一个基于 Vue3 + Ant Design 的内部数据门户系统，旨在为公司各业务线提供统一的产业数据查询、分析和决策支持服务。
 
-## 🌟 在线预览
+### 核心特性
 
-🔗 **[Live Demo](https://kehan857.github.io/Industrial-Data-Center/)**
+- **双主题设计系统**: 深色主题（数据可视化）+ 浅色主题（列表管理）
+- **权限管理**: 基于角色的访问控制（RBAC）
+- **响应式布局**: 适配各种屏幕尺寸
+- **现代化UI**: 赛博朋克风格的深色主题，简洁专业的浅色主题
+- **智能匹配**: 供需信息自动匹配推荐
 
-## ✨ 功能特点
+## 技术栈
 
-- 🎯 **产业链分析**: 交互式产业链图谱，可视化产业结构和关系
-- 🗺️ **产业地图**: 地理分布热力图和区域产业分析
-- 🏢 **企业资源**: 企业信息管理、产品展示、专家库
-- 📊 **数据洞察**: 多维度数据分析和智能报告
-- 💼 **需求匹配**: 需求发布、解决方案库、智能匹配
-- 🎨 **现代化UI**: 响应式设计，支持深色/浅色主题切换
-- 🔐 **权限管理**: 用户角色管理和权限控制
+- **前端框架**: Vue 3.4+ (Composition API)
+- **UI库**: Ant Design Vue 4.1+
+- **路由**: Vue Router 4.2+
+- **状态管理**: Pinia 2.1+
+- **图表库**: ECharts 5.4+ + Vue-ECharts
+- **构建工具**: Vite 5.0+
+- **类型检查**: TypeScript 5.3+
+- **样式预处理**: Less 4.2+
 
-## 🛠️ 技术栈
-
-### 核心技术
-- **前端框架**: Vue 3.4 + Composition API
-- **类型系统**: TypeScript 5.3
-- **UI组件库**: Ant Design Vue 4.1
-- **路由管理**: Vue Router 4.2
-- **状态管理**: Pinia 2.1
-
-### 数据可视化
-- **图表库**: ECharts 5.4
-- **Vue集成**: Vue-ECharts 6.6
-- **数据处理**: D3.js 7.8
-
-### 开发工具
-- **构建工具**: Vite 5.0
-- **样式预处理**: Less 4.2
-- **HTTP客户端**: Axios 1.6
-
-## 🚀 快速开始
-
-### 环境要求
-
-- Node.js >= 16.0.0
-- npm >= 8.0.0
-
-### 安装依赖
-
-```bash
-npm install
-```
-
-### 开发模式
-
-```bash
-npm run dev
-```
-
-访问 http://localhost:3000
-
-### 构建生产版本
-
-```bash
-npm run build
-```
-
-### 预览构建结果
-
-```bash
-npm run preview
-```
-
-### GitHub Pages部署
-
-```bash
-npm run deploy
-```
-
-## 📁 项目结构
+## 项目结构
 
 ```
 产业数据中心原型/
 ├── src/
-│   ├── components/          # 公共组件
-│   ├── views/              # 页面组件
-│   │   ├── auth/           # 🔐 认证相关
-│   │   ├── insights/       # 📊 数据洞察
-│   │   │   ├── IndustryChain.vue    # 产业链图谱
-│   │   │   ├── IndustryMap.vue      # 产业地图
-│   │   │   └── EnterpriseMap.vue    # 企业地图
-│   │   ├── resources/      # 📋 资源管理
-│   │   │   ├── EnterpriseList.vue   # 企业库
-│   │   │   ├── ProductList.vue      # 产品库
-│   │   │   ├── ExpertList.vue       # 专家库
-│   │   │   ├── DemandList.vue       # 需求库
-│   │   │   └── SolutionList.vue     # 解决方案库
-│   │   ├── opportunities/  # 🎯 商机发现
-│   │   └── admin/          # ⚙️ 系统管理
-│   ├── router/             # 路由配置
-│   ├── styles/             # 样式文件
-│   │   ├── themes/         # 主题配置
-│   │   │   ├── light.less  # 浅色主题
-│   │   │   └── dark.less   # 深色主题
-│   │   └── global.less     # 全局样式
-│   ├── layouts/            # 布局组件
-│   └── main.ts            # 应用入口
-├── .github/workflows/      # GitHub Actions
-├── public/                 # 静态资源
-└── dist/                  # 构建输出
+│   ├── assets/                 # 静态资源
+│   ├── components/             # 公共组件
+│   ├── layouts/               # 布局组件
+│   │   └── MainLayout.vue     # 主布局
+│   ├── router/                # 路由配置
+│   │   └── index.ts          # 路由主文件
+│   ├── stores/               # Pinia状态管理
+│   ├── styles/               # 样式文件
+│   │   └── global.less       # 全局样式（双主题）
+│   ├── utils/                # 工具函数
+│   ├── views/                # 页面组件
+│   │   ├── auth/             # 认证相关页面
+│   │   │   └── Login.vue     # 登录页
+│   │   ├── resources/        # 资源库页面
+│   │   │   ├── EnterpriseList.vue      # 企业库列表
+│   │   │   ├── EnterpriseDetail.vue    # 企业详情
+│   │   │   ├── DemandList.vue          # 需求库列表
+│   │   │   └── ...
+│   │   ├── insights/         # 战略洞察页面
+│   │   │   ├── IndustryOverview.vue    # 产业链概览
+│   │   │   ├── IndustryChain.vue       # 产业链图谱
+│   │   │   └── EnterpriseMap.vue       # 企业地图
+│   │   ├── opportunities/    # 机会引擎页面
+│   │   │   └── SupplyDemandMap.vue     # 供需地图
+│   │   ├── admin/           # 后台管理页面
+│   │   └── Dashboard.vue    # 数据概览
+│   ├── main.ts              # 应用入口
+│   └── App.vue              # 根组件
+├── public/                  # 公共静态资源
+├── package.json            # 项目配置
+├── vite.config.ts          # Vite配置
+├── tsconfig.json           # TypeScript配置
+└── README.md               # 项目说明
 ```
 
-## 🎯 功能模块
+## 功能模块
 
-### 📊 数据洞察
-- **产业概览**: 整体产业发展状况和趋势分析
-- **产业链图谱**: 交互式产业链可视化，支持节点详情查看
-- **产业地图**: 全国产业分布热力图和区域对比
-- **企业地图**: 企业空间分布和集群分析
+### V1.0 - 数据地基
+- ✅ **统一认证与权限中心**: 企业工号登录，角色权限管理
+- ✅ **资源库列表视图**: 企业库、需求库、产品库等九大资源库
+- ✅ **实体画像详情页**: 360度企业画像，关联数据聚合展示
 
-### 📋 资源管理
-- **企业库**: 企业信息管理，支持搜索、筛选、详情查看
-- **产品库**: 产品信息展示，分类管理
-- **专家库**: 专家资源管理，专业领域分类
-- **需求库**: 需求信息发布、搜索、匹配
-- **解决方案库**: 解决方案展示和推荐
+### V1.1 - 战略洞察  
+- ✅ **产业链图谱**: 交互式产业链结构可视化
+- ✅ **企业地图**: 地理维度的产业分布分析
 
-### 🎯 商机发现
-- **供需地图**: 供需关系可视化分析
-- **智能匹配**: 基于算法的需求解决方案匹配
+### V1.2 - 机会引擎
+- ✅ **供需地图**: 全国需求分布可视化
+- ✅ **智能匹配**: 需求与内部产品/解决方案自动匹配
 
-### ⚙️ 系统管理
-- **用户管理**: 用户信息管理和权限控制
-- **角色管理**: 角色权限配置和分配
+## 设计规范
 
-## 🎨 设计特色
+### 双主题系统
 
-### 主题系统
-- 🌞 **浅色主题**: 清新明亮的视觉体验
-- 🌙 **深色主题**: 护眼的深色模式
-- 🎛️ **一键切换**: 实时主题切换，无需刷新
+#### 深色主题 (用于数据可视化页面)
+- **主背景**: `#0A0F2A` (深邃星空蓝)
+- **组件背景**: `#1A2044` (半透明深蓝)
+- **主色调**: `#00E5FF` (赛博蓝)
+- **辅助色**: `#7B61FF` (电光紫), `#FFD700` (亮金色)
+- **特效**: 玻璃拟态、辉光效果、脉冲动画
 
-### 响应式设计
-- 📱 **移动端优化**: 完美适配手机和平板
-- 💻 **桌面端体验**: 充分利用大屏幕空间
-- 🔄 **自适应布局**: 智能响应不同屏幕尺寸
+#### 浅色主题 (用于列表和管理页面)
+- **主背景**: `#FFFFFF` / `#F7F8FA`
+- **主色调**: `#409EFF` (标准蓝)
+- **文本色**: `#303133` (主要), `#606266` (次要), `#C0C4CC` (辅助)
 
-### 交互体验
-- ✨ **流畅动画**: 精心设计的过渡效果
-- 🎯 **直观操作**: 符合用户习惯的交互设计
-- 📊 **数据可视化**: 丰富的图表和可视化组件
+### 字体体系
+- **字体族**: PingFang SC, Microsoft YaHei, Helvetica Neue, Sans-Serif
+- **H1**: 24px Bold (页面主标题)
+- **H2**: 20px Bold (模块标题)  
+- **H3**: 16px Medium (卡片标题)
+- **正文**: 14px Regular
+- **辅助**: 12px Regular
 
-## 🚀 部署说明
+## 快速开始
 
-### GitHub Pages自动部署
+### 环境要求
+- Node.js >= 16.0.0
+- npm >= 8.0.0 或 yarn >= 1.22.0
 
-项目配置了GitHub Actions，当代码推送到main分支时会自动构建和部署到GitHub Pages。
-
-### 手动部署
-
-1. 构建项目：
+### 安装依赖
 ```bash
-npm run build:gh-pages
+npm install
+# 或
+yarn install
 ```
 
-2. 部署到GitHub Pages：
+### 开发运行
 ```bash
-npm run deploy
+npm run dev
+# 或
+yarn dev
 ```
 
-## 🤝 贡献指南
+访问 http://localhost:3000
 
-### 开发规范
+### 构建部署
+```bash
+npm run build
+# 或
+yarn build
+```
+
+## 用户角色说明
+
+| 角色 | 权限描述 | 主要功能 |
+|------|----------|----------|
+| **超级管理员** | 系统最高权限 | 用户管理、角色配置、系统设置 |
+| **数据分析师** | 数据治理和深度分析 | 数据标注、高级搜索、数据导出 |
+| **业务用户** | 日常业务查询分析 | 资源库查询、图谱分析、需求匹配 |
+| **只读观察员** | 仅查看权限 | 仪表板浏览、报告查看 |
+
+## 登录说明
+
+### 测试账号
+- **管理员**: 用户名 `admin`, 密码 `123456`
+- **普通用户**: 用户名 `user`, 密码 `123456`
+
+### 登录流程
+1. 访问系统首页，自动跳转到登录页
+2. 输入企业工号和密码
+3. 系统验证成功后跳转到数据概览页面
+4. 根据用户角色显示相应的菜单和功能
+
+## 主要页面说明
+
+### 🌟 数据概览 (Dashboard)
+- **主题**: 深色赛博朋克风格
+- **功能**: KPI指标展示、趋势图表、快速入口
+- **特效**: 数字滚动、辉光动画、脉冲效果
+
+### 📊 企业库 (Enterprise List)  
+- **主题**: 浅色简洁风格
+- **功能**: 多条件筛选、表格展示、批量操作
+- **特色**: 企业规模标签、产业链分类、快速跳转
+
+### 🗺️ 企业地图 (Enterprise Map)
+- **主题**: 深色科技风格  
+- **功能**: 地理分布展示、区域下钻、企业聚类
+- **交互**: 省份点击、悬浮提示、动态切换
+
+### 🚀 供需地图 (Supply-Demand Map)
+- **主题**: 深色驾驶舱风格
+- **功能**: 需求分布、智能匹配、机会发现
+- **特色**: 实时数据、热力图效果、分类筛选
+
+## 开发规范
+
+### 代码风格
 - 使用 TypeScript 进行类型检查
-- 遵循 Vue 3 Composition API 最佳实践
-- 统一的代码格式化和 ESLint 规则
-- 组件命名采用 PascalCase
-- 文件命名采用 kebab-case
+- 采用 Composition API 编写组件
+- 遵循 Vue 3 最佳实践
+- Less 预处理器编写样式
 
-### 提交规范
-- feat: 新功能
-- fix: 修复bug
-- docs: 文档更新
-- style: 代码格式调整
-- refactor: 代码重构
-- test: 测试相关
-- chore: 构建或辅助工具变动
+### 组件规范
+- 单文件组件 (.vue)
+- Props 类型声明
+- Emits 事件声明
+- 响应式数据管理
 
-## 📄 许可证
+### 样式规范
+- CSS 变量实现主题切换
+- 移动端响应式适配
+- 组件样式作用域隔离
+- 动画效果适度使用
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+## 部署说明
 
-## 🙏 致谢
+### 生产环境配置
+1. 设置正确的 API 基础路径
+2. 配置 HTTPS 证书
+3. 启用 Gzip 压缩
+4. 配置缓存策略
 
-感谢以下开源项目：
-- [Vue.js](https://vuejs.org/) - 渐进式JavaScript框架
-- [Ant Design Vue](https://antdv.com/) - 企业级UI组件库
-- [ECharts](https://echarts.apache.org/) - 强大的数据可视化库
-- [Vite](https://vitejs.dev/) - 下一代前端构建工具
+### 服务器要求
+- 支持 HTML5 History Mode
+- 静态文件服务
+- HTTPS 支持
+- 反向代理配置
+
+## 版本说明
+
+- **当前版本**: v1.0.0
+- **Vue版本**: 3.4+
+- **Ant Design Vue**: 4.1+
+- **兼容性**: 现代浏览器 (Chrome 88+, Firefox 78+, Safari 14+)
+
+## 贡献指南
+
+1. Fork 项目
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 提交 Pull Request
+
+## 许可证
+
+本项目为内部使用系统，版权归公司所有。
 
 ---
 
-⭐ 如果这个项目对你有帮助，请给它一个Star！
-
-## 项目特性
-
-- 🎯 产业链图谱交互式可视化
-- 🗺️ 产业地图地理分布展示  
-- 🏢 企业资源管理(企业库、产品库、专家库、需求库、解决方案库)
-- 💼 需求匹配和智能推荐
-- 🎨 深色/浅色主题切换
-- 📱 响应式设计适配各种设备
-- 🔐 用户角色权限管理
-
-## 技术栈
-
-- Vue 3.4 + Composition API + TypeScript 5.3
-- Ant Design Vue 4.1 + Vue Router 4.2 + Pinia 2.1
-- ECharts 5.4 + D3.js 7.8 + Vite 5.0 + Less 4.2
-
-## 部署状态
-
-- **GitHub Pages**: https://kehan857.github.io/Industrial-Data-Center/
-- **自动部署**: 推送到main分支自动触发构建和部署
-- **更新时间**: 2025年1月26日
-
-最新更新：添加了workflow_dispatch触发器，支持手动部署。 
+**天云聚合产业数据中心** - 让数据驱动决策，让洞察创造价值 
