@@ -5,7 +5,7 @@
 [![Vue 3](https://img.shields.io/badge/Vue-3.4-4FC08D?logo=vue.js)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 
-> 基于Vue3 + TypeScript + Ant Design Vue的现代化产业数据中心系统
+天云聚合产业数据中心 - 构建智慧产业生态，赋能数字经济发展
 
 ## 🌟 在线预览
 
@@ -202,4 +202,28 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ---
 
-⭐ 如果这个项目对你有帮助，请给它一个Star！ 
+⭐ 如果这个项目对你有帮助，请给它一个Star！
+
+## 项目特性
+
+- 🎯 产业链图谱交互式可视化
+- 🗺️ 产业地图地理分布展示  
+- 🏢 企业资源管理(企业库、产品库、专家库、需求库、解决方案库)
+- 💼 需求匹配和智能推荐
+- 🎨 深色/浅色主题切换
+- 📱 响应式设计适配各种设备
+- 🔐 用户角色权限管理
+
+## 技术栈
+
+- Vue 3.4 + Composition API + TypeScript 5.3
+- Ant Design Vue 4.1 + Vue Router 4.2 + Pinia 2.1
+- ECharts 5.4 + D3.js 7.8 + Vite 5.0 + Less 4.2
+
+## 部署状态
+
+- **GitHub Pages**: https://kehan857.github.io/Industrial-Data-Center/
+- **自动部署**: 推送到main分支自动触发构建和部署
+- **更新时间**: 2025年1月26日
+
+最新更新：添加了workflow_dispatch触发器，支持手动部署。 
