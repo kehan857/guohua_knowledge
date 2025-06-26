@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:  # 添加手动触发选项
 
 # 设置权限
 permissions:
@@ -49,6 +50,6 @@ jobs:
         path: ./dist
         
     - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
       id: deployment
       uses: actions/deploy-pages@v4 
