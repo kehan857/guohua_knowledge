@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天云聚合产业数据中心 - 预览</title>
+    <style>
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+        }
+
+        /* 全局样式 */
+        body {
+            background-color: #f5f5f5;
+            overflow-x: hidden;
+        }
+
+        /* 字体体系 */
+        .h1-title { font-size: 24px; font-weight: bold; }
+        .h2-title { font-size: 20px; font-weight: bold; }
+        .h3-title { font-size: 16px; font-weight: 500; }
+        .body-text { font-size: 14px; font-weight: normal; }
+        .caption-text { font-size: 12px; font-weight: normal; }
+
+        /* 浅色主题变量 */
+        :root {
+            --primary-bg: #FFFFFF;
+            --component-bg: #F7F8FA;
+            --primary-color: #409EFF;
+            --text-primary: #303133;
+            --text-secondary: #606266;
+            --text-placeholder: #C0C4CC;
+            --border-color: #E4E7ED;
+        }
+
+        /* 深色主题变量 */
+        .dark-theme {
+            --primary-bg: #0A0F2A;
+            --component-bg: #1A2044;
+            --primary-color: #00E5FF;
+            --secondary-color: #7B61FF;
+            --accent-gold: #FFD700;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0C4DE;
+            --border-color: rgba(0, 229, 255, 0.3);
+            
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+        }
+
+        /* 导航栏 */
+        .nav-bar {
+            background: #fff;
+            border-bottom: 1px solid #e4e7ed;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #409EFF;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+        }
+
+        .btn.active {
+            background: #409EFF;
+            color: white;
+            border-color: #409EFF;
+        }
+
+        .btn.theme-btn {
+            background: #1A2044;
+            color: #00E5FF;
+            border-color: #00E5FF;
+        }
+
+        /* 页面容器 */
+        .page-container {
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .page {
+            display: none;
+            padding: 20px;
+            min-height: calc(100vh - 100px);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* 登录页面样式 */
+        .login-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-title {
+            font-size: 24px;
+            color: #303133;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: #606266;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #606266;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #409EFF;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #409EFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #3a8ee6;
+        }
+
+        /* 仪表板样式 */
+        .dashboard {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            padding: 30px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-filters {
+            display: flex;
+            gap: 16px;
+        }
+
+        .select-input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--component-bg);
+            color: var(--text-primary);
+        }
+
+        /* KPI卡片网格 */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: var(--component-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dark-theme .kpi-card {
+            background: rgba(26, 32, 68, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 229, 255, 0.1);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .dark-theme .kpi-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 32px rgba(0, 229, 255, 0.2);
+        }
+
+        .kpi-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .dark-theme .kpi-value {
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+
+        .kpi-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .kpi-trend {
+            font-size: 12px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        /* 图表区域 */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: var(--component-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .dark-theme .chart-container {
+            background: rgba(26, 32, 68, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .chart {
+            height: 300px;
+            background: rgba(10, 15, 42, 0.5);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        /* 快速入口 */
+        .quick-actions {
+            margin-top: 30px;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: var(--component-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme .action-card {
+            background: rgba(26, 32, 68, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 32px;
+            color: var(--primary-color);
+            margin-right: 16px;
+        }
+
+        .dark-theme .action-icon {
+            filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
+        }
+
+        .action-content h4 {
+            color: var(--text-primary);
+            margin: 0 0 4px 0;
+            font-size: 16px;
+        }
+
+        .action-content p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 12px;
+        }
+
+        /* 企业库列表页样式 */
+        .enterprise-list {
+            background: var(--primary-bg);
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-section {
+            background: var(--component-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .filter-actions {
+            text-align: right;
+        }
+
+        .table-section {
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: var(--component-bg);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table td {
+            color: var(--text-primary);
+        }
+
+        .table tr:hover td {
+            background: var(--component-bg);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .tag.blue { background: #409EFF; }
+        .tag.green { background: #67C23A; }
+        .tag.orange { background: #E6A23C; }
+        .tag.red { background: #F56C6C; }
+        .tag.purple { background: #722ed1; }
+        .tag.cyan { background: #13c2c2; }
+        .tag.gold { background: #faad14; }
+
+        /* 新页面样式 */
+        .page-header-light {
+            background: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .demo-content {
+            padding: 0 24px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .demo-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .demo-card h3 {
+            color: #409EFF;
+            margin-bottom: 8px;
+        }
+
+        .demo-table {
+            background: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .status-active {
+            color: #52c41a;
+            font-weight: 500;
+        }
+
+        .status-inactive {
+            color: #f5222d;
+            font-weight: 500;
+        }
+
+        .link-btn {
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .link-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* 动画效果 */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page.active {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-bar {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .page-container {
+                margin-top: 120px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-section {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav-bar">
+        <div class="nav-title">天云聚合产业数据中心</div>
+        <div class="nav-buttons">
+            <button class="btn active" onclick="showPage('login')">登录页</button>
+            <button class="btn" onclick="showPage('dashboard')">数据概览</button>
+            <button class="btn" onclick="showPage('enterprise')">企业库</button>
+            <button class="btn" onclick="showPage('demand')">需求库</button>
+            <button class="btn" onclick="showPage('enterpriseMap')">企业地图</button>
+            <button class="btn" onclick="showPage('supplyDemand')">供需地图</button>
+            <button class="btn" onclick="showPage('industryChain')">产业链图谱</button>
+            <button class="btn" onclick="showPage('userManagement')">用户管理</button>
+            <button class="btn theme-btn" onclick="toggleTheme()">🌙 深色主题</button>
+        </div>
+    </nav>
+
+    <!-- 页面容器 -->
+    <div class="page-container">
+        <!-- 登录页面 -->
+        <div id="login" class="page login-page active">
+            <div class="login-card">
+                <div class="login-header">
+                    <h1 class="login-title">天云聚合产业数据中心</h1>
+                    <p class="login-subtitle">内部数据门户 - 请登录您的企业账户</p>
+                </div>
+                
+                <form class="login-form">
+                    <div class="form-group">
+                        <label class="form-label">工号</label>
+                        <input type="text" class="form-input" placeholder="请输入工号" value="admin">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">密码</label>
+                        <input type="password" class="form-input" placeholder="请输入密码" value="123456">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" checked> 记住我
+                        </label>
+                    </div>
+                    
+                    <button type="button" class="login-btn" onclick="showPage('dashboard')">登录</button>
+                </form>
+                
+                <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #909399;">
+                    © 2024 天云聚合产业数据中心 - 内部使用系统
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据概览页面 -->
+        <div id="dashboard" class="page dashboard">
+            <div class="dashboard-header">
+                <h1 class="h1-title">产业数据中心 - 总览</h1>
+                <div class="dashboard-filters">
+                    <select class="select-input">
+                        <option>全部产业链</option>
+                        <option>石油化工</option>
+                        <option>大数据</option>
+                        <option>新能源</option>
+                    </select>
+                    <input type="date" class="select-input">
+                </div>
+            </div>
+
+            <!-- KPI指标卡片 -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">15,432</div>
+                    <div class="kpi-label">企业总数</div>
+                    <div class="kpi-trend">
+                        <span style="color: #00E5FF;">↗</span>
+                        <span>+12.5%</span>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-value">8,765</div>
+                    <div class="kpi-label">需求总量</div>
+                    <div class="kpi-trend">
+                        <span style="color: #00E5FF;">↗</span>
+                        <span>+8.3%</span>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-value">23,456</div>
+                    <div class="kpi-label">产品数量</div>
+                    <div class="kpi-trend">
+                        <span style="color: #00E5FF;">↗</span>
+                        <span>+15.2%</span>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-value">234</div>
+                    <div class="kpi-label">今日匹配</div>
+                    <div class="kpi-trend">
+                        <span style="color: #FFD700;">↗</span>
+                        <span>+23.1%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="h3-title" style="text-align: center; margin-bottom: 16px;">产业链分布</h3>
+                    <div class="chart">
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">🏭</div>
+                            <div>产业分布图表</div>
+                            <div style="font-size: 12px; margin-top: 4px;">石油化工 45% | 大数据 30% | 新能源 25%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 class="h3-title" style="text-align: center; margin-bottom: 16px;">地域分布</h3>
+                    <div class="chart">
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">📊</div>
+                            <div>地域分布图表</div>
+                            <div style="font-size: 12px; margin-top: 4px;">广东 20% | 江苏 18% | 山东 15%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速入口 -->
+            <div class="quick-actions">
+                <h2 class="h2-title" style="margin-bottom: 24px;">快速入口</h2>
+                <div class="action-grid">
+                    <div class="action-card">
+                        <div class="action-icon">🔗</div>
+                        <div class="action-content">
+                            <h4>产业链图谱</h4>
+                            <p>可视化产业链结构</p>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <div class="action-icon">🗺️</div>
+                        <div class="action-content">
+                            <h4>企业地图</h4>
+                            <p>地理分布分析</p>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <div class="action-icon">🚀</div>
+                        <div class="action-content">
+                            <h4>供需地图</h4>
+                            <p>机会发现引擎</p>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card" onclick="showPage('enterprise')">
+                        <div class="action-icon">💾</div>
+                        <div class="action-content">
+                            <h4>资源库</h4>
+                            <p>数据查询分析</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 企业库列表页面 -->
+        <div id="enterprise" class="page enterprise-list">
+            <div class="page-header">
+                <h1 class="h1-title">企业库</h1>
+                <div class="header-actions">
+                    <button class="btn">📥 导出数据</button>
+                </div>
+            </div>
+
+            <!-- 筛选区域 -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div>
+                        <label class="form-label">企业名称</label>
+                        <input type="text" class="form-input" placeholder="请输入企业名称">
+                    </div>
+                    <div>
+                        <label class="form-label">产业链</label>
+                        <select class="form-input">
+                            <option>请选择产业链</option>
+                            <option>石油化工</option>
+                            <option>大数据</option>
+                            <option>新能源</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">省份</label>
+                        <select class="form-input">
+                            <option>请选择省份</option>
+                            <option>广东省</option>
+                            <option>江苏省</option>
+                            <option>山东省</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">成立时间</label>
+                        <input type="date" class="form-input">
+                    </div>
+                </div>
+                
+                <div class="filter-actions">
+                    <button class="btn" style="margin-right: 8px;">重置</button>
+                    <button class="btn active">查询</button>
+                </div>
+            </div>
+
+            <!-- 数据表格 -->
+            <div class="table-section">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>企业名称</th>
+                            <th>产业链</th>
+                            <th>所在地区</th>
+                            <th>企业规模</th>
+                            <th>成立时间</th>
+                            <th>注册资本</th>
+                            <th>经营范围</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="#" class="link-btn">河北宇意科技股份有限公司</a></td>
+                            <td><span class="tag blue">石油化工</span></td>
+                            <td>河北省 石家庄市</td>
+                            <td><span class="tag red">大型</span></td>
+                            <td>2010-03-15</td>
+                            <td>5000万元</td>
+                            <td>化工产品生产、销售</td>
+                            <td>
+                                <a href="#" class="link-btn">详情</a>
+                                <a href="#" class="link-btn">产品</a>
+                                <a href="#" class="link-btn">收藏</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" class="link-btn">江苏华达化工有限公司</a></td>
+                            <td><span class="tag blue">石油化工</span></td>
+                            <td>江苏省 南京市</td>
+                            <td><span class="tag orange">中型</span></td>
+                            <td>2015-08-20</td>
+                            <td>2000万元</td>
+                            <td>精细化工、化学原料</td>
+                            <td>
+                                <a href="#" class="link-btn">详情</a>
+                                <a href="#" class="link-btn">产品</a>
+                                <a href="#" class="link-btn">收藏</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" class="link-btn">广东智联大数据科技有限公司</a></td>
+                            <td><span class="tag green">大数据</span></td>
+                            <td>广东省 深圳市</td>
+                            <td><span class="tag red">大型</span></td>
+                            <td>2018-12-10</td>
+                            <td>1亿元</td>
+                            <td>大数据分析、云计算服务</td>
+                            <td>
+                                <a href="#" class="link-btn">详情</a>
+                                <a href="#" class="link-btn">产品</a>
+                                <a href="#" class="link-btn">收藏</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" class="link-btn">山东绿能新能源股份有限公司</a></td>
+                            <td><span class="tag orange">新能源</span></td>
+                            <td>山东省 青岛市</td>
+                            <td><span class="tag red">大型</span></td>
+                            <td>2012-06-05</td>
+                            <td>3亿元</td>
+                            <td>太阳能、风能设备制造</td>
+                            <td>
+                                <a href="#" class="link-btn">详情</a>
+                                <a href="#" class="link-btn">产品</a>
+                                <a href="#" class="link-btn">收藏</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="#" class="link-btn">浙江创新材料科技有限公司</a></td>
+                            <td><span class="tag blue">石油化工</span></td>
+                            <td>浙江省 杭州市</td>
+                            <td><span class="tag blue">小型</span></td>
+                            <td>2020-01-18</td>
+                            <td>500万元</td>
+                            <td>新材料研发、生产</td>
+                            <td>
+                                <a href="#" class="link-btn">详情</a>
+                                <a href="#" class="link-btn">产品</a>
+                                <a href="#" class="link-btn">收藏</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="padding: 16px; text-align: center; border-top: 1px solid var(--border-color);">
+                    <span style="color: var(--text-secondary);">共 50 条记录，显示第 1-5 条</span>
+                    <div style="margin-top: 8px;">
+                        <button class="btn" style="margin: 0 4px;">上一页</button>
+                        <button class="btn active" style="margin: 0 4px;">1</button>
+                        <button class="btn" style="margin: 0 4px;">2</button>
+                        <button class="btn" style="margin: 0 4px;">3</button>
+                        <button class="btn" style="margin: 0 4px;">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 需求库页面 -->
+        <div id="demand" class="page">
+            <div class="page-header-light">
+                <h1 class="h1-title">需求库</h1>
+                <p>查看和管理全国招标采购需求信息</p>
+            </div>
+            
+            <div class="demo-content">
+                <div class="grid-layout">
+                    <div class="demo-card">
+                        <h3>🔍 智能搜索</h3>
+                        <p>支持需求标题、发布单位、关键词多维度搜索</p>
+                    </div>
+                    <div class="demo-card">
+                        <h3>📊 分类筛选</h3>
+                        <p>设备采购、服务招标、工程项目等精准分类</p>
+                    </div>
+                    <div class="demo-card">
+                        <h3>⚡ 智能匹配</h3>
+                        <p>AI驱动的需求与解决方案自动匹配</p>
+                    </div>
+                    <div class="demo-card">
+                        <h3>📈 需求分析</h3>
+                        <p>市场趋势、竞争态势、机会识别</p>
+                    </div>
+                </div>
+                
+                <div class="demo-table">
+                    <h3>需求列表示例</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>需求标题</th>
+                                <th>发布单位</th>
+                                <th>分类</th>
+                                <th>预算</th>
+                                <th>截止时间</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>化工设备维护保养服务招标</td>
+                                <td>中石化胜利油田</td>
+                                <td><span class="tag purple">维修保养</span></td>
+                                <td>500万元</td>
+                                <td>2024-07-15</td>
+                                <td><span class="status-active">进行中</span></td>
+                            </tr>
+                            <tr>
+                                <td>石油化工智能监控系统采购</td>
+                                <td>万华化学集团</td>
+                                <td><span class="tag blue">设备采购</span></td>
+                                <td>1200万元</td>
+                                <td>2024-07-20</td>
+                                <td><span class="status-active">进行中</span></td>
+                            </tr>
+                            <tr>
+                                <td>化工园区安全监测平台建设</td>
+                                <td>上海化工区管委会</td>
+                                <td><span class="tag green">服务招标</span></td>
+                                <td>2000万元</td>
+                                <td>2024-08-10</td>
+                                <td><span class="status-active">进行中</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 企业地图页面 -->
+        <div id="enterpriseMap" class="page">
+            <div class="dashboard-header">
+                <h1 class="h1-title">企业地图</h1>
+                <p style="color: var(--text-secondary); margin-top: 8px;">基于地理位置的企业分布可视化分析</p>
+            </div>
+            
+            <div class="map-container">
+                <div class="map-sidebar">
+                    <div class="map-kpi-grid">
+                        <div class="kpi-card glass-card">
+                            <div class="kpi-content">
+                                <div class="kpi-value glow">15,432</div>
+                                <div class="kpi-label">企业总数</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card glass-card">
+                            <div class="kpi-content">
+                                <div class="kpi-value glow">4,521</div>
+                                <div class="kpi-label">上游企业</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card glass-card">
+                            <div class="kpi-content">
+                                <div class="kpi-value glow">6,789</div>
+                                <div class="kpi-label">中游企业</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card glass-card">
+                            <div class="kpi-content">
+                                <div class="kpi-value glow">4,122</div>
+                                <div class="kpi-label">下游企业</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="map-legend glass-card">
+                        <h4>产业分布</h4>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #00E5FF;"></span>
+                            <span>石油化工</span>
+                            <span>45%</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #7B61FF;"></span>
+                            <span>大数据</span>
+                            <span>25%</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #FFD700;"></span>
+                            <span>新能源</span>
+                            <span>20%</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #FF6B6B;"></span>
+                            <span>其他</span>
+                            <span>10%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="map-main">
+                    <div class="china-map">
+                        <div class="map-placeholder">
+                            <div class="map-content">
+                                <h3>🗺️ 中国企业分布热力图</h3>
+                                <p>在真实系统中，这里将显示：</p>
+                                <ul>
+                                    <li>🔥 省份热力图（企业密度可视化）</li>
+                                    <li>📍 企业位置标记（按产业链分色）</li>
+                                    <li>🎯 可点击区域（下钻到城市级别）</li>
+                                    <li>📊 动态数据图表（实时更新）</li>
+                                    <li>🔍 地图搜索和筛选功能</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 供需地图页面 -->
+        <div id="supplyDemand" class="page">
+            <div class="dashboard-header">
+                <h1 class="h1-title">供需地图</h1>
+                <p style="color: var(--text-secondary); margin-top: 8px;">智能化供需匹配与机会发现引擎</p>
+            </div>
+            
+            <div class="supply-demand-layout">
+                <div class="supply-sidebar glass-card">
+                    <h3>📊 供需统计</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-value text-cyan">8,765</div>
+                            <div class="stat-label">活跃需求</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value text-purple">15,432</div>
+                            <div class="stat-label">供应商</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value text-gold">3,241</div>
+                            <div class="stat-label">匹配机会</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value text-green">89.5%</div>
+                            <div class="stat-label">匹配精度</div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <h4>🎯 筛选条件</h4>
+                        <div class="filter-group">
+                            <label>需求分类</label>
+                            <select class="select-input-dark">
+                                <option>全部分类</option>
+                                <option>设备采购</option>
+                                <option>服务招标</option>
+                                <option>工程项目</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>地区范围</label>
+                            <select class="select-input-dark">
+                                <option>全国</option>
+                                <option>华北地区</option>
+                                <option>华东地区</option>
+                                <option>华南地区</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>预算范围</label>
+                            <input type="range" class="range-input" min="0" max="100">
+                            <div class="range-labels">
+                                <span>0万</span>
+                                <span>10000万+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="supply-main">
+                    <div class="supply-map-placeholder">
+                        <h3>🚀 智能供需匹配地图</h3>
+                        <div class="map-features">
+                            <div class="feature-item">
+                                <span class="feature-icon">🎯</span>
+                                <span>AI智能匹配算法</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">📈</span>
+                                <span>实时供需分析</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🔍</span>
+                                <span>机会发现引擎</span>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">💡</span>
+                                <span>智能推荐系统</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="opportunity-panel glass-card">
+                    <h3>⚡ 匹配机会</h3>
+                    <div class="opportunity-list">
+                        <div class="opportunity-item">
+                            <div class="opportunity-header">
+                                <span class="match-score">95%</span>
+                                <span class="opportunity-title">化工设备维护项目</span>
+                            </div>
+                            <div class="opportunity-meta">
+                                <span class="tag cyan">设备维护</span>
+                                <span class="budget">500万元</span>
+                            </div>
+                        </div>
+                        <div class="opportunity-item">
+                            <div class="opportunity-header">
+                                <span class="match-score">88%</span>
+                                <span class="opportunity-title">智能监控系统采购</span>
+                            </div>
+                            <div class="opportunity-meta">
+                                <span class="tag purple">系统集成</span>
+                                <span class="budget">1200万元</span>
+                            </div>
+                        </div>
+                        <div class="opportunity-item">
+                            <div class="opportunity-header">
+                                <span class="match-score">82%</span>
+                                <span class="opportunity-title">安全监测平台建设</span>
+                            </div>
+                            <div class="opportunity-meta">
+                                <span class="tag gold">平台开发</span>
+                                <span class="budget">2000万元</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 产业链图谱页面 -->
+        <div id="industryChain" class="page">
+            <div class="dashboard-header">
+                <h1 class="h1-title">产业链图谱</h1>
+                <p style="color: var(--text-secondary); margin-top: 8px;">可视化产业链结构与企业关系网络</p>
+            </div>
+            
+            <div class="industry-chain-layout">
+                <div class="chain-controls glass-card">
+                    <h3>🎛️ 图谱控制</h3>
+                    <div class="control-group">
+                        <label>产业链选择</label>
+                        <select class="select-input-dark">
+                            <option>石油化工</option>
+                            <option>大数据</option>
+                            <option>新能源</option>
+                            <option>智能制造</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>显示层级</label>
+                        <div class="level-controls">
+                            <button class="level-btn active">上游</button>
+                            <button class="level-btn active">中游</button>
+                            <button class="level-btn active">下游</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>企业规模</label>
+                        <div class="size-filters">
+                            <label><input type="checkbox" checked> 大型</label>
+                            <label><input type="checkbox" checked> 中型</label>
+                            <label><input type="checkbox" checked> 小型</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chain-graph">
+                    <div class="graph-placeholder">
+                        <h3>🔗 石油化工产业链图谱</h3>
+                        <div class="chain-demo">
+                            <div class="chain-level">
+                                <h4>上游（原料）</h4>
+                                <div class="chain-nodes">
+                                    <div class="chain-node upstream">原油开采</div>
+                                    <div class="chain-node upstream">天然气</div>
+                                    <div class="chain-node upstream">煤炭化工</div>
+                                </div>
+                            </div>
+                            <div class="chain-arrows">
+                                <div class="arrow">→</div>
+                                <div class="arrow">→</div>
+                                <div class="arrow">→</div>
+                            </div>
+                            <div class="chain-level">
+                                <h4>中游（加工）</h4>
+                                <div class="chain-nodes">
+                                    <div class="chain-node midstream">石油炼制</div>
+                                    <div class="chain-node midstream">化工生产</div>
+                                    <div class="chain-node midstream">精细化工</div>
+                                </div>
+                            </div>
+                            <div class="chain-arrows">
+                                <div class="arrow">→</div>
+                                <div class="arrow">→</div>
+                                <div class="arrow">→</div>
+                            </div>
+                            <div class="chain-level">
+                                <h4>下游（应用）</h4>
+                                <div class="chain-nodes">
+                                    <div class="chain-node downstream">塑料制品</div>
+                                    <div class="chain-node downstream">橡胶制品</div>
+                                    <div class="chain-node downstream">化纤纺织</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="graph-note">
+                            在真实系统中，图谱支持拖拽、缩放、节点详情查看等交互功能
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="chain-info glass-card">
+                    <h3>📈 产业统计</h3>
+                    <div class="info-stats">
+                        <div class="info-item">
+                            <span class="info-label">总企业数</span>
+                            <span class="info-value">6,891</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">上游企业</span>
+                            <span class="info-value">1,234</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">中游企业</span>
+                            <span class="info-value">2,567</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">下游企业</span>
+                            <span class="info-value">3,090</span>
+                        </div>
+                    </div>
+                    
+                    <div class="key-enterprises">
+                        <h4>🏆 核心企业</h4>
+                        <div class="enterprise-list">
+                            <div class="enterprise-item">
+                                <span class="enterprise-name">中石化</span>
+                                <span class="enterprise-type">上游</span>
+                            </div>
+                            <div class="enterprise-item">
+                                <span class="enterprise-name">万华化学</span>
+                                <span class="enterprise-type">中游</span>
+                            </div>
+                            <div class="enterprise-item">
+                                <span class="enterprise-name">恒力石化</span>
+                                <span class="enterprise-type">下游</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户管理页面 -->
+        <div id="userManagement" class="page">
+            <div class="page-header-light">
+                <h1 class="h1-title">用户管理</h1>
+                <p>系统用户账户、角色权限的统一管理</p>
+            </div>
+            
+            <div class="user-management-layout">
+                <div class="user-toolbar">
+                    <div class="toolbar-left">
+                        <button class="btn primary">+ 新增用户</button>
+                        <button class="btn">批量导入</button>
+                        <button class="btn">导出数据</button>
+                    </div>
+                    <div class="toolbar-right">
+                        <input type="text" class="search-input" placeholder="搜索用户名、姓名或邮箱">
+                        <select class="filter-select">
+                            <option>全部角色</option>
+                            <option>超级管理员</option>
+                            <option>数据分析师</option>
+                            <option>业务用户</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="user-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <div class="stat-value">156</div>
+                            <div class="stat-label">总用户数</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <div class="stat-value">142</div>
+                            <div class="stat-label">活跃用户</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔒</div>
+                        <div class="stat-content">
+                            <div class="stat-value">14</div>
+                            <div class="stat-label">锁定用户</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🆕</div>
+                        <div class="stat-content">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">本月新增</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox"></th>
+                                <th>用户名</th>
+                                <th>真实姓名</th>
+                                <th>邮箱</th>
+                                <th>部门</th>
+                                <th>角色</th>
+                                <th>状态</th>
+                                <th>最后登录</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>admin</td>
+                                <td>系统管理员</td>
+                                <td>admin@company.com</td>
+                                <td>信息技术部</td>
+                                <td><span class="role-tag admin">超级管理员</span></td>
+                                <td><span class="status-active">活跃</span></td>
+                                <td>2024-06-24 09:30</td>
+                                <td>
+                                    <button class="action-btn">编辑</button>
+                                    <button class="action-btn">重置密码</button>
+                                    <button class="action-btn danger">锁定</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>analyst01</td>
+                                <td>张数据</td>
+                                <td>zhang@company.com</td>
+                                <td>数据分析部</td>
+                                <td><span class="role-tag analyst">数据分析师</span></td>
+                                <td><span class="status-active">活跃</span></td>
+                                <td>2024-06-24 08:45</td>
+                                <td>
+                                    <button class="action-btn">编辑</button>
+                                    <button class="action-btn">重置密码</button>
+                                    <button class="action-btn danger">锁定</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>business01</td>
+                                <td>李业务</td>
+                                <td>li@company.com</td>
+                                <td>市场营销部</td>
+                                <td><span class="role-tag business">业务用户</span></td>
+                                <td><span class="status-inactive">锁定</span></td>
+                                <td>2024-06-20 14:22</td>
+                                <td>
+                                    <button class="action-btn">编辑</button>
+                                    <button class="action-btn">重置密码</button>
+                                    <button class="action-btn success">解锁</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination-container">
+                    <div class="pagination-info">显示第 1-10 条，共 156 条记录</div>
+                    <div class="pagination">
+                        <button class="page-btn">上一页</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTheme = 'light';
+        
+        // 页面切换功能
+        function showPage(pageId) {
+            // 隐藏所有页面
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // 显示目标页面
+            document.getElementById(pageId).classList.add('active');
+            
+            // 更新导航按钮状态
+            const buttons = document.querySelectorAll('.nav-buttons .btn:not(.theme-btn)');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 根据页面自动切换主题
+            if (pageId === 'dashboard' || pageId === 'enterpriseMap' || pageId === 'supplyDemand' || pageId === 'industryChain') {
+                setTheme('dark');
+            } else {
+                setTheme('light');
+            }
+        }
+        
+        // 主题切换功能
+        function toggleTheme() {
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
+        
+        function setTheme(theme) {
+            currentTheme = theme;
+            const body = document.body;
+            const themeBtn = document.querySelector('.theme-btn');
+            
+            if (theme === 'dark') {
+                body.classList.add('dark-theme');
+                themeBtn.textContent = '☀️ 浅色主题';
+                themeBtn.style.background = '#409EFF';
+                themeBtn.style.color = 'white';
+                themeBtn.style.borderColor = '#409EFF';
+            } else {
+                body.classList.remove('dark-theme');
+                themeBtn.textContent = '🌙 深色主题';
+                themeBtn.style.background = '#1A2044';
+                themeBtn.style.color = '#00E5FF';
+                themeBtn.style.borderColor = '#00E5FF';
+            }
+        }
+        
+        // 数字动画效果
+        function animateNumber(element, finalNumber) {
+            const startNumber = 0;
+            const duration = 2000;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const currentNumber = Math.floor(startNumber + (finalNumber - startNumber) * progress);
+                element.textContent = currentNumber.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化数字动画（仅在仪表板页面可见时）
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const valueElement = entry.target.querySelector('.kpi-value');
+                        const finalValue = parseInt(valueElement.textContent.replace(/,/g, ''));
+                        animateNumber(valueElement, finalValue);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.kpi-card').forEach(card => {
+                observer.observe(card);
+            });
+            
+            // 添加表格行悬浮效果
+            document.querySelectorAll('.table tbody tr').forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.background = 'var(--component-bg)';
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    this.style.background = '';
+                });
+            });
+            
+            console.log('🚀 天云聚合产业数据中心预览页面已加载');
+            console.log('💡 功能说明：');
+            console.log('   - 点击顶部导航切换不同页面');
+            console.log('   - 点击主题按钮切换深色/浅色主题');
+            console.log('   - 数据概览页面支持自动切换到深色主题');
+            console.log('   - 完全响应式设计，支持移动端');
+        });
+    </script>
+</body>
+</html> 
