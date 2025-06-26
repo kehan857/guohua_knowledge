@@ -3,61 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>天云聚合产业数据中心</title>
-  <script>
-    // GitHub Pages SPA路由重定向
-    // 将404页面重定向到index.html，保留路径信息
-    (function(l) {
-      if (l.search[1] === '/' ) {
-        var decoded = sessionStorage.redirect || l.pathname;
-        sessionStorage.removeItem('redirect');
-        if (decoded !== l.pathname) {
-          history.replaceState(null, null, decoded);
-        }
-      }
-    }(window.location))
-  </script>
-</head>
-<body>
-  <div id="loading" style="
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #f5f5f5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    z-index: 9999;
-  ">
-    <div style="text-align: center;">
-      <div style="
-        width: 40px;
-        height: 40px;
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #238636;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 20px;
-      "></div>
-      <p style="color: #666; margin: 0;">正在加载产业数据中心...</p>
-    </div>
-  </div>
-  
+  <title>产业数据中心 - 页面未找到</title>
+  <!-- 缓存强制更新: 2025-01-26 13:50:00 -->
   <style>
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      text-align: center;
+      max-width: 500px;
+      padding: 2rem;
+    }
+    .logo {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      font-weight: 300;
+    }
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      padding: 12px 24px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-2px);
     }
   </style>
-  
+</head>
+<body>
+  <div class="container">
+    <div class="logo">🧠</div>
+    <h1>页面正在加载中...</h1>
+    <p>产业数据中心正在为您准备内容，请稍候片刻。</p>
+    <a href="/Industrial-Data-Center/" class="btn">返回首页</a>
+  </div>
+
   <script>
-    // 延迟后重定向到主页
+    // SPA路由重定向逻辑
+    (function() {
+      var redirect = sessionStorage.redirect;
+      delete sessionStorage.redirect;
+      if (redirect && redirect !== location.href) {
+        history.replaceState(null, null, redirect);
+      }
+    })();
+
+    // 将当前路径保存到 sessionStorage，以便SPA应用处理
+    sessionStorage.redirect = location.href;
+    
+    // 自动跳转到主应用
     setTimeout(function() {
       window.location.href = '/Industrial-Data-Center/';
-    }, 2000);
+    }, 1000);
   </script>
 </body>
 </html> 

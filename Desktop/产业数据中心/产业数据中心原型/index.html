@@ -5,9 +5,48 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>天云聚合产业数据中心</title>
+    <!-- 缓存强制更新: 2025-01-26 13:51:00 -->
+    <meta name="description" content="天云聚合产业数据中心 - 构建智慧产业生态，赋能数字经济发展" />
+    <meta name="keywords" content="产业数据,产业链,企业服务,数字经济,智慧产业" />
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+        color: white;
+        z-index: 9999;
+      ">
+        <div style="text-align: center; max-width: 400px; padding: 2rem;">
+          <div style="font-size: 4rem; margin-bottom: 1rem;">🧠</div>
+          <h1 style="font-size: 2rem; margin-bottom: 1rem; font-weight: 300;">产业数据中心</h1>
+          <div style="
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+          "></div>
+          <p style="color: rgba(255,255,255,0.9); margin: 0;">正在初始化应用...</p>
+        </div>
+      </div>
+    </div>
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html> 
