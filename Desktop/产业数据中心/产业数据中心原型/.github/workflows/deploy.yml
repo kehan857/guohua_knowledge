@@ -1,42 +1,87 @@
-name: 部署产业数据中心
+name: 部署到 GitHub Pages
 
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# 允许从 Actions 选项卡手动运行此工作流程
+  workflow_dispatch:
+
+# 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 允许只有一个并发部署，跳过正在运行和最新队列之间的运行队列
+# 但是，不要取消正在进行的运行，因为我们希望允许这些生产部署完成
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  # 构建作业
+  build:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: 检出代码
-      uses: actions/checkout@v4
-      
-    - name: 设置Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        
-    - name: 安装依赖
-      run: npm ci
-      
-    - name: 构建项目
-      run: npm run build
-      
-    - name: 复制预览页面
-      run: |
-        cp preview.html dist/
-        echo "预览页面已复制到dist目录"
-        
-    - name: 部署到GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist
-        
-    - name: 输出部署信息
-      run: |
-        echo "🚀 部署完成！"
-        echo "主站地址: https://kehan857.github.io/Industrial-Data-Center110/"
-        echo "预览地址: https://kehan857.github.io/Industrial-Data-Center110/preview.html" 
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 不需要历史记录，但需要最新的提交
+
+      - name: 检测包管理器
+        id: detect-package-manager
+        run: |
+          if [ -f "${{ github.workspace }}/yarn.lock" ]; then
+            echo "manager=yarn" >> $GITHUB_OUTPUT
+            echo "command=install" >> $GITHUB_OUTPUT
+            echo "runner=yarn" >> $GITHUB_OUTPUT
+            exit 0
+          elif [ -f "${{ github.workspace }}/package.json" ]; then
+            echo "manager=npm" >> $GITHUB_OUTPUT
+            echo "command=ci" >> $GITHUB_OUTPUT
+            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            echo "Unable to determine package manager"
+            exit 1
+          fi
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: ${{ steps.detect-package-manager.outputs.manager }}
+
+      - name: 设置 Pages
+        uses: actions/configure-pages@v4
+        with:
+          # 自动注入 baseURL 到 Vite 配置文件
+          # 这个操作可能会修改以下文件：vite.config.{js,ts,mjs}
+          generator_config_file: vite.config.ts
+
+      - name: 安装依赖
+        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+
+      - name: 构建 Vite 应用
+        run: ${{ steps.detect-package-manager.outputs.runner }} vite build
+
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  # 部署作业
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    name: 部署
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 

@@ -1,66 +1,109 @@
-# Dependencies
+# 依赖文件
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Production build
+# 构建输出
 dist/
-.tmp/
-.rpt2_cache/
-.vite/
+dist-ssr/
+*.local
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Cache
-.cache/
-.eslintcache
-.stylelintcache
-
-# Temporary files
-*.tmp
-*.temp
-
-# Editor directories and files
+# 编辑器文件
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
+.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# macOS
-.AppleDouble
-.LSOverride
+# 系统文件
+Thumbs.db
+.Trash*/
+.tmp/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Windows
-Desktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
+# 日志文件
+logs/
+*.log
 
-# Linux
-*~ 
+# 运行时数据
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage目录
+lib-cov/
+coverage/
+.nyc_output/
+
+# Grunt中间文件
+.grunt/
+
+# Bower依赖目录
+bower_components/
+
+# node-waf配置
+.lock-wscript
+
+# 编译后的二进制插件
+build/Release/
+
+# TypeScript编译缓存
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# VSCode设置
+.vscode/settings.json
+
+# 临时文件
+temp/
+tmp/ 

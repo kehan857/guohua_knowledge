@@ -1,15 +1,16 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue()],
+  // GitHub Pages部署配置
+  base: process.env.NODE_ENV === 'production' ? '/Industrial-Data-Center/' : '/',
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
-    }
+      '@': resolve(__dirname, 'src'),
+    },
   },
-  base: process.env.NODE_ENV === 'production' ? '/Industrial-Data-Center110/' : '/',
   css: {
     preprocessorOptions: {
       less: {
@@ -22,20 +23,21 @@ export default defineConfig({
       },
     },
   },
-  server: {
-    port: 3000,
-    open: true,
-  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
     rollupOptions: {
       output: {
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
-      }
-    }
+        manualChunks: {
+          vendor: ['vue', 'vue-router'],
+          antd: ['ant-design-vue'],
+        },
+      },
+    },
+  },
+  server: {
+    port: 3000,
+    open: true,
   },
 }) 
