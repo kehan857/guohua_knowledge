@@ -40,9 +40,9 @@
             @change="handleStatusChange"
           >
             <a-select-option value="">全部状态</a-select-option>
-            <a-select-option value="待解决">待解决</a-select-option>
-            <a-select-option value="进行中">进行中</a-select-option>
-            <a-select-option value="已解决">已解决</a-select-option>
+            <a-select-option value="open">开放中</a-select-option>
+            <a-select-option value="matched">已匹配</a-select-option>
+            <a-select-option value="closed">已关闭</a-select-option>
           </a-select>
         </a-col>
         <a-col :span="4">
@@ -60,7 +60,7 @@
           </a-select>
         </a-col>
         <a-col :span="4">
-          <a-button type="primary" size="large" style="width: 100%" @click="resetFilters">
+          <a-button type="primary" @click="resetFilters" size="large">
             重置筛选
           </a-button>
         </a-col>
@@ -68,48 +68,83 @@
     </div>
 
     <!-- 需求列表 -->
-    <div class="demand-grid">
+    <div class="demand-cards">
       <a-row :gutter="[16, 16]">
-        <a-col :span="8" v-for="demand in filteredDemands" :key="demand.id">
+        <a-col 
+          v-for="demand in filteredDemands" 
+          :key="demand.id" 
+          :xs="24" 
+          :sm="12" 
+          :lg="8" 
+          :xl="6"
+        >
           <a-card 
             class="demand-card" 
             hoverable
-            @click="viewDemandDetail(demand)"
+            @click="showDemandDetail(demand)"
           >
             <template #title>
               <div class="card-title">
-                <span>{{ demand.title }}</span>
-                <a-tag :color="getStatusColor(demand.status)">{{ demand.status }}</a-tag>
+                {{ demand.title }}
+                <a-tag :color="getStatusColor(demand.status)">
+                  {{ getStatusText(demand.status) }}
+                </a-tag>
               </div>
             </template>
             
             <div class="demand-content">
               <div class="demand-info">
-                <div class="info-row">
-                  <span class="label">发布企业：</span>
-                  <span class="value">{{ demand.company }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="label">技术领域：</span>
-                  <span class="value">{{ demand.techField }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="label">预算范围：</span>
-                  <span class="value">{{ demand.budget }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="label">紧急程度：</span>
-                  <a-tag :color="getUrgencyColor(demand.urgency)">{{ demand.urgency }}</a-tag>
+                <p class="description">{{ demand.description }}</p>
+                
+                <div class="meta-info">
+                  <div class="info-row">
+                    <span class="label">企业：</span>
+                    <span class="value">{{ demand.company }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">行业：</span>
+                    <span class="value">{{ demand.industry }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">预算：</span>
+                    <span class="value budget">{{ demand.budget }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="label">紧急程度：</span>
+                    <a-tag :color="getUrgencyColor(demand.urgency)">
+                      {{ demand.urgency }}
+                    </a-tag>
+                  </div>
                 </div>
               </div>
               
-              <div class="demand-description">
-                {{ demand.description }}
-              </div>
-              
-              <div class="demand-meta">
-                <span class="publish-time">发布时间：{{ demand.publishTime }}</span>
-                <span class="deadline">截止时间：{{ demand.deadline }}</span>
+              <div class="demand-footer">
+                <div class="tech-tags">
+                  <a-tag 
+                    v-for="tech in demand.technologies.slice(0, 2)" 
+                    :key="tech"
+                    size="small"
+                  >
+                    {{ tech }}
+                  </a-tag>
+                  <span v-if="demand.technologies.length > 2" class="more-tags">
+                    +{{ demand.technologies.length - 2 }}
+                  </span>
+                </div>
+                
+                <div class="action-buttons">
+                  <a-button size="small" @click.stop="viewDemand(demand)">
+                    查看详情
+                  </a-button>
+                  <a-button 
+                    v-if="demand.status === 'open'" 
+                    type="primary" 
+                    size="small"
+                    @click.stop="matchDemand(demand)"
+                  >
+                    立即匹配
+                  </a-button>
+                </div>
               </div>
             </div>
           </a-card>
@@ -120,11 +155,11 @@
     <!-- 分页 -->
     <div class="pagination-wrapper">
       <a-pagination
-        v-model:current="currentPage"
-        v-model:page-size="pageSize"
-        :total="totalDemands"
-        show-size-changer
-        show-quick-jumper
+        v-model:current="pagination.current"
+        v-model:page-size="pagination.pageSize"
+        :total="pagination.total"
+        :show-size-changer="true"
+        :show-quick-jumper="true"
         :show-total="(total: number, range: [number, number]) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`"
         @change="handlePageChange"
         @show-size-change="handlePageSizeChange"
@@ -138,73 +173,65 @@
       width="800px"
       :footer="null"
     >
-      <div v-if="selectedDemand" class="demand-detail">
+      <div v-if="selectedDemand" class="demand-detail-modal">
         <div class="detail-header">
           <h3>{{ selectedDemand.title }}</h3>
-          <div class="header-tags">
-            <a-tag :color="getStatusColor(selectedDemand.status)">{{ selectedDemand.status }}</a-tag>
-            <a-tag :color="getUrgencyColor(selectedDemand.urgency)">{{ selectedDemand.urgency }}</a-tag>
-          </div>
+          <a-tag :color="getStatusColor(selectedDemand.status)">
+            {{ getStatusText(selectedDemand.status) }}
+          </a-tag>
         </div>
         
         <div class="detail-content">
-          <div class="detail-section">
+          <div class="basic-info">
             <h4>基本信息</h4>
-            <div class="info-grid">
-              <div class="info-item">
-                <span class="label">发布企业：</span>
-                <span class="value">{{ selectedDemand.company }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">联系人：</span>
-                <span class="value">{{ selectedDemand.contact }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">技术领域：</span>
-                <span class="value">{{ selectedDemand.techField }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">预算范围：</span>
-                <span class="value">{{ selectedDemand.budget }}</span>
-              </div>
-            </div>
+            <a-descriptions :column="2" bordered>
+              <a-descriptions-item label="发布企业">{{ selectedDemand.company }}</a-descriptions-item>
+              <a-descriptions-item label="所属行业">{{ selectedDemand.industry }}</a-descriptions-item>
+              <a-descriptions-item label="项目预算">{{ selectedDemand.budget }}</a-descriptions-item>
+              <a-descriptions-item label="紧急程度">
+                <a-tag :color="getUrgencyColor(selectedDemand.urgency)">
+                  {{ selectedDemand.urgency }}
+                </a-tag>
+              </a-descriptions-item>
+              <a-descriptions-item label="发布时间">{{ selectedDemand.publishTime }}</a-descriptions-item>
+              <a-descriptions-item label="截止时间">{{ selectedDemand.deadline }}</a-descriptions-item>
+            </a-descriptions>
           </div>
           
-          <div class="detail-section">
+          <div class="demand-description">
             <h4>需求描述</h4>
-            <p>{{ selectedDemand.fullDescription }}</p>
+            <p>{{ selectedDemand.description }}</p>
           </div>
           
-          <div class="detail-section">
+          <div class="tech-requirements">
             <h4>技术要求</h4>
-            <ul>
-              <li v-for="requirement in selectedDemand.requirements" :key="requirement">
-                {{ requirement }}
-              </li>
-            </ul>
+            <div class="tech-list">
+              <a-tag 
+                v-for="tech in selectedDemand.technologies" 
+                :key="tech"
+                color="blue"
+              >
+                {{ tech }}
+              </a-tag>
+            </div>
           </div>
           
-          <div class="detail-section">
-            <h4>时间信息</h4>
-            <div class="info-grid">
-              <div class="info-item">
-                <span class="label">发布时间：</span>
-                <span class="value">{{ selectedDemand.publishTime }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">截止时间：</span>
-                <span class="value">{{ selectedDemand.deadline }}</span>
-              </div>
-            </div>
+          <div class="contact-info">
+            <h4>联系方式</h4>
+            <p>联系人：{{ selectedDemand.contact }}</p>
+            <p>电话：{{ selectedDemand.phone }}</p>
+            <p>邮箱：{{ selectedDemand.email }}</p>
           </div>
         </div>
         
-        <div class="detail-actions">
-          <a-button type="primary" size="large">
-            联系企业
-          </a-button>
-          <a-button size="large" style="margin-left: 12px;">
-            收藏需求
+        <div class="modal-actions">
+          <a-button @click="detailModalVisible = false">关闭</a-button>
+          <a-button 
+            v-if="selectedDemand.status === 'open'" 
+            type="primary"
+            @click="matchDemand(selectedDemand)"
+          >
+            立即匹配
           </a-button>
         </div>
       </div>
@@ -213,97 +240,85 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-
-interface Demand {
-  id: number
-  title: string
-  company: string
-  contact: string
-  techField: string
-  industry: string
-  budget: string
-  urgency: string
-  status: string
-  description: string
-  fullDescription: string
-  requirements: string[]
-  publishTime: string
-  deadline: string
-}
+import { ref, computed, reactive, onMounted } from 'vue'
+import { message } from 'ant-design-vue'
 
 // 响应式数据
 const searchText = ref('')
 const selectedIndustry = ref('')
 const selectedStatus = ref('')
 const selectedUrgency = ref('')
-const currentPage = ref(1)
-const pageSize = ref(12)
 const detailModalVisible = ref(false)
-const selectedDemand = ref<Demand | null>(null)
+const selectedDemand = ref<any>(null)
 
-// 模拟数据
-const demands = ref<Demand[]>([
+// 分页配置
+const pagination = reactive({
+  current: 1,
+  pageSize: 12,
+  total: 0
+})
+
+// 模拟需求数据
+const demands = ref([
   {
     id: 1,
-    title: '智能制造生产线优化系统',
-    company: '江苏智造科技有限公司',
-    contact: '张工程师',
-    techField: '工业互联网',
+    title: '智能制造生产线自动化改造',
+    description: '需要对传统生产线进行智能化改造，实现自动化生产和质量控制',
+    company: '华东制造股份有限公司',
     industry: '制造业',
-    budget: '50-100万',
+    budget: '500-1000万',
     urgency: '高',
-    status: '待解决',
-    description: '需要开发一套智能制造生产线优化系统，提升生产效率...',
-    fullDescription: '我们需要开发一套智能制造生产线优化系统，能够实时监控生产线状态，自动调整生产参数，提升生产效率和产品质量。系统需要集成现有的MES系统，支持多种设备协议，具备预测性维护功能。',
-    requirements: ['支持OPC-UA协议', '实时数据处理能力', '机器学习算法集成', '可视化监控界面'],
+    status: 'open',
+    technologies: ['工业互联网', '机器视觉', 'PLC控制', '数据采集'],
     publishTime: '2024-01-15',
-    deadline: '2024-03-15'
+    deadline: '2024-03-15',
+    contact: '张经理',
+    phone: '138****1234',
+    email: 'zhang@company.com'
   },
   {
     id: 2,
-    title: '新能源汽车电池管理系统',
-    company: '绿色动力新能源',
-    contact: '李总工',
-    techField: '电池技术',
-    industry: '新能源',
-    budget: '100-200万',
+    title: '医疗影像AI诊断系统开发',
+    description: '开发基于深度学习的医疗影像自动诊断系统，提升诊断准确率',
+    company: '仁和医疗集团',
+    industry: '生物医药',
+    budget: '200-500万',
     urgency: '中',
-    status: '进行中',
-    description: '开发高效的电池管理系统，提升电池安全性和使用寿命...',
-    fullDescription: '需要开发新一代电池管理系统（BMS），具备精确的电池状态估算、热管理、安全保护等功能。系统要求高可靠性、低功耗，支持快充技术。',
-    requirements: ['SOC/SOH精确估算', '热管理算法', '故障诊断功能', 'CAN通信协议'],
-    publishTime: '2024-01-10',
-    deadline: '2024-04-10'
+    status: 'open',
+    technologies: ['深度学习', '医疗影像', 'Python', 'TensorFlow'],
+    publishTime: '2024-01-20',
+    deadline: '2024-06-20',
+    contact: '李主任',
+    phone: '139****5678',
+    email: 'li@hospital.com'
   },
   {
     id: 3,
-    title: '医疗影像AI识别算法',
-    company: '智慧医疗科技',
-    contact: '王主任',
-    techField: '人工智能',
-    industry: '生物医药',
-    budget: '80-150万',
+    title: '新能源汽车电池管理系统',
+    description: '研发高效的动力电池管理系统，提升电池使用寿命和安全性',
+    company: '绿驰新能源科技',
+    industry: '新能源',
+    budget: '1000-2000万',
     urgency: '高',
-    status: '待解决',
-    description: '开发基于深度学习的医疗影像识别算法，提高诊断准确率...',
-    fullDescription: '需要开发基于深度学习的医疗影像识别算法，主要用于CT、MRI影像的病灶检测和分类。要求算法准确率高、处理速度快，能够集成到现有PACS系统中。',
-    requirements: ['深度学习模型', '高准确率识别', 'DICOM格式支持', 'GPU加速计算'],
-    publishTime: '2024-01-20',
-    deadline: '2024-05-20'
+    status: 'matched',
+    technologies: ['BMS系统', '电池技术', '嵌入式开发', '热管理'],
+    publishTime: '2024-01-10',
+    deadline: '2024-05-10',
+    contact: '王总工',
+    phone: '137****9012',
+    email: 'wang@newenergy.com'
   }
 ])
 
-// 计算属性
+// 计算属性：过滤后的需求列表
 const filteredDemands = computed(() => {
   let filtered = demands.value
 
   if (searchText.value) {
-    const search = searchText.value.toLowerCase()
     filtered = filtered.filter(demand => 
-      demand.title.toLowerCase().includes(search) ||
-      demand.description.toLowerCase().includes(search) ||
-      demand.techField.toLowerCase().includes(search)
+      demand.title.includes(searchText.value) ||
+      demand.description.includes(searchText.value) ||
+      demand.technologies.some(tech => tech.includes(searchText.value))
     )
   }
 
@@ -322,23 +337,21 @@ const filteredDemands = computed(() => {
   return filtered
 })
 
-const totalDemands = computed(() => filteredDemands.value.length)
-
 // 方法
 const handleSearch = () => {
-  currentPage.value = 1
+  pagination.current = 1
 }
 
 const handleIndustryChange = () => {
-  currentPage.value = 1
+  pagination.current = 1
 }
 
 const handleStatusChange = () => {
-  currentPage.value = 1
+  pagination.current = 1
 }
 
 const handleUrgencyChange = () => {
-  currentPage.value = 1
+  pagination.current = 1
 }
 
 const resetFilters = () => {
@@ -346,43 +359,62 @@ const resetFilters = () => {
   selectedIndustry.value = ''
   selectedStatus.value = ''
   selectedUrgency.value = ''
-  currentPage.value = 1
+  pagination.current = 1
 }
 
-const handlePageChange = (page: number) => {
-  currentPage.value = page
-}
-
-const handlePageSizeChange = (current: number, size: number) => {
-  pageSize.value = size
-  currentPage.value = 1
-}
-
-const viewDemandDetail = (demand: Demand) => {
+const showDemandDetail = (demand: any) => {
   selectedDemand.value = demand
   detailModalVisible.value = true
 }
 
+const viewDemand = (demand: any) => {
+  showDemandDetail(demand)
+}
+
+const matchDemand = (demand: any) => {
+  message.success(`正在为需求"${demand.title}"寻找匹配的解决方案...`)
+  detailModalVisible.value = false
+}
+
+const handlePageChange = (page: number) => {
+  pagination.current = page
+}
+
+const handlePageSizeChange = (current: number, size: number) => {
+  pagination.pageSize = size
+  pagination.current = 1
+}
+
 const getStatusColor = (status: string) => {
   const colors: Record<string, string> = {
-    '待解决': 'orange',
-    '进行中': 'blue',
-    '已解决': 'green'
+    open: 'green',
+    matched: 'blue',
+    closed: 'red'
   }
   return colors[status] || 'default'
 }
 
+const getStatusText = (status: string) => {
+  const texts: Record<string, string> = {
+    open: '开放中',
+    matched: '已匹配',
+    closed: '已关闭'
+  }
+  return texts[status] || status
+}
+
 const getUrgencyColor = (urgency: string) => {
   const colors: Record<string, string> = {
-    '高': 'red',
-    '中': 'orange',
-    '低': 'green'
+    高: 'red',
+    中: 'orange',
+    低: 'green'
   }
   return colors[urgency] || 'default'
 }
 
+// 生命周期
 onMounted(() => {
-  // 组件挂载后的初始化逻辑
+  pagination.total = demands.value.length
 })
 </script>
 
@@ -393,78 +425,54 @@ onMounted(() => {
   min-height: 100vh;
 
   .page-header {
-    margin-bottom: 32px;
-    text-align: center;
-
+    margin-bottom: 24px;
+    
     h2 {
       color: var(--text-primary);
-      font-size: 32px;
-      font-weight: 600;
       margin-bottom: 8px;
     }
-
+    
     p {
       color: var(--text-secondary);
-      font-size: 16px;
+      margin: 0;
     }
   }
 
   .search-section {
-    background: var(--component-bg);
-    padding: 24px;
-    border-radius: 12px;
     margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background: var(--component-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
   }
 
-  .demand-grid {
+  .demand-cards {
     margin-bottom: 32px;
 
     .demand-card {
       height: 100%;
+      border: 1px solid var(--border-color);
       border-radius: 12px;
+      background: var(--component-bg);
       transition: all 0.3s ease;
-      cursor: pointer;
 
       &:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       }
 
       .card-title {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 600;
       }
 
       .demand-content {
-        .demand-info {
-          margin-bottom: 16px;
-
-          .info-row {
-            display: flex;
-            margin-bottom: 8px;
-            font-size: 14px;
-
-            .label {
-              color: var(--text-secondary);
-              width: 80px;
-              flex-shrink: 0;
-            }
-
-            .value {
-              color: var(--text-primary);
-              flex: 1;
-            }
-          }
-        }
-
-        .demand-description {
+        .description {
           color: var(--text-secondary);
-          font-size: 14px;
-          line-height: 1.6;
           margin-bottom: 16px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -472,11 +480,44 @@ onMounted(() => {
           overflow: hidden;
         }
 
-        .demand-meta {
-          display: flex;
-          justify-content: space-between;
-          font-size: 12px;
-          color: var(--text-tertiary);
+        .meta-info {
+          margin-bottom: 16px;
+
+          .info-row {
+            display: flex;
+            margin-bottom: 4px;
+            font-size: 12px;
+
+            .label {
+              color: var(--text-secondary);
+              min-width: 60px;
+            }
+
+            .value {
+              color: var(--text-primary);
+              
+              &.budget {
+                color: var(--success-color);
+                font-weight: 600;
+              }
+            }
+          }
+        }
+
+        .demand-footer {
+          .tech-tags {
+            margin-bottom: 12px;
+
+            .more-tags {
+              color: var(--text-secondary);
+              font-size: 12px;
+            }
+          }
+
+          .action-buttons {
+            display: flex;
+            gap: 8px;
+          }
         }
       }
     }
@@ -485,123 +526,59 @@ onMounted(() => {
   .pagination-wrapper {
     display: flex;
     justify-content: center;
-    padding: 24px 0;
+    padding: 20px 0;
   }
 }
 
-.demand-detail {
+.demand-detail-modal {
   .detail-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-color);
-
+    
     h3 {
-      color: var(--text-primary);
       margin: 0;
-    }
-
-    .header-tags {
-      display: flex;
-      gap: 8px;
+      color: var(--text-primary);
     }
   }
 
   .detail-content {
-    .detail-section {
-      margin-bottom: 24px;
-
-      h4 {
-        color: var(--text-primary);
-        margin-bottom: 12px;
-        font-size: 16px;
-        font-weight: 600;
+    h4 {
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      margin-top: 24px;
+      
+      &:first-child {
+        margin-top: 0;
       }
+    }
 
-      .info-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-
-        .info-item {
-          display: flex;
-          font-size: 14px;
-
-          .label {
-            color: var(--text-secondary);
-            width: 100px;
-            flex-shrink: 0;
-          }
-
-          .value {
-            color: var(--text-primary);
-            flex: 1;
-          }
-        }
-      }
-
-      p {
-        color: var(--text-primary);
-        line-height: 1.6;
-        margin: 0;
-      }
-
-      ul {
-        margin: 0;
-        padding-left: 20px;
-
-        li {
-          color: var(--text-primary);
-          line-height: 1.6;
-          margin-bottom: 4px;
-        }
-      }
+    .tech-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
   }
 
-  .detail-actions {
+  .modal-actions {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
     padding-top: 24px;
     border-top: 1px solid var(--border-color);
   }
 }
 
 // 响应式设计
-@media (max-width: 1200px) {
-  .demand-grid {
-    :deep(.ant-col) {
-      width: 50% !important;
-      max-width: 50% !important;
-      flex: 0 0 50% !important;
-    }
-  }
-}
-
 @media (max-width: 768px) {
   .demand-list-container {
     padding: 16px;
 
     .search-section {
-      padding: 16px;
-
-      :deep(.ant-row) {
-        flex-direction: column;
-
-        .ant-col {
-          width: 100% !important;
-          margin-bottom: 12px;
-        }
-      }
-    }
-
-    .demand-grid {
-      :deep(.ant-col) {
-        width: 100% !important;
-        max-width: 100% !important;
-        flex: 0 0 100% !important;
+      .ant-row > .ant-col {
+        margin-bottom: 12px;
       }
     }
   }
