@@ -29,13 +29,23 @@ jobs:
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        
+        with:
+          static_site_generator: vite
+          
       - name: Install dependencies
-        run: npm ci
-        
-      - name: Build
-        run: npm run build
-        
+        run: |
+          npm ci
+          echo "Dependencies installed successfully"
+          
+      - name: Build with Vite
+        env:
+          NODE_ENV: production
+        run: |
+          echo "Building with Vite..."
+          npm run build
+          echo "Build completed"
+          ls -la dist/
+          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
