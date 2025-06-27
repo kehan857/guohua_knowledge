@@ -1,0 +1,9 @@
+FORCE DEPLOY TRIGGER
+===================
+
+Time: 2025-06-27 09:35:00 CST
+Issue: Website showing 404 error
+Action: Force trigger GitHub Actions deployment
+
+This file is created to force a new commit and trigger GitHub Pages deployment.
+The website is currently inaccessible and needs immediate deployment fix. 
