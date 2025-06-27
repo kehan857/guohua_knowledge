@@ -1,114 +1,53 @@
-name: 🚀 部署产业数据中心到 GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  # 允许从 Actions 选项卡手动运行此工作流程
   workflow_dispatch:
-  # 定时触发（每天一次，用于测试）
-  schedule:
-    - cron: '0 2 * * *'
 
-# 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
-  actions: read
 
-# 允许只有一个并发部署，跳过正在运行和最新队列之间的运行队列
-# 但是，不要取消正在进行的运行，因为我们希望允许这些生产部署完成
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # 构建作业
   build:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: 📥 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # 获取完整历史记录
 
-      - name: 🔍 检测包管理器
-        id: detect-package-manager
-        run: |
-          echo "🔍 检测项目包管理器..."
-          if [ -f "${{ github.workspace }}/yarn.lock" ]; then
-            echo "✅ 检测到 Yarn"
-            echo "manager=yarn" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT
-            echo "runner=yarn" >> $GITHUB_OUTPUT
-            exit 0
-          elif [ -f "${{ github.workspace }}/package.json" ]; then
-            echo "✅ 检测到 NPM"
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT
-            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
-            exit 0
-          else
-            echo "❌ 无法确定包管理器"
-            exit 1
-          fi
-
-      - name: 🟢 设置 Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
+          cache: npm
 
-      - name: ⚙️ 设置 Pages
+      - name: Setup Pages
         uses: actions/configure-pages@v4
-        with:
-          # 自动注入 baseURL 到 Vite 配置文件
-          generator_config_file: vite.config.ts
 
-      - name: 📦 安装依赖
-        run: |
-          echo "📦 开始安装依赖..."
-          ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
-          echo "✅ 依赖安装完成"
+      - name: Install dependencies
+        run: npm install
 
-      - name: 🏗️ 构建 Vite 应用
-        run: |
-          echo "🏗️ 开始构建应用..."
-          ${{ steps.detect-package-manager.outputs.manager }} run build
-          echo "✅ 构建完成"
-          
-      - name: 📊 构建结果检查
-        run: |
-          echo "📊 检查构建结果..."
-          ls -la dist/
-          echo "📄 index.html 内容预览:"
-          head -20 dist/index.html
-          echo "✅ 构建产物检查完成"
+      - name: Build
+        run: npm run build
 
-      - name: 📤 上传构建产物
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
-  # 部署作业
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
     runs-on: ubuntu-latest
-    name: 🚀 部署
-    
+    needs: build
     steps:
-      - name: 🚀 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
-        
-      - name: 🎉 部署完成通知
-        run: |
-          echo "🎉 部署成功完成！"
-          echo "🔗 访问地址: ${{ steps.deployment.outputs.page_url }}"
-          echo "📅 部署时间: $(date)" 
+        uses: actions/deploy-pages@v4 
