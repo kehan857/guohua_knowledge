@@ -34,23 +34,23 @@ export const translations = {
     },
     hero: {
       badge: "全新功能上线",
-      title1: "写出",
-      title2: "更好的作品",
-      subtitle: "熵变AI，面向企业知识与多模态内容的创作与洞察平台：采集素材、解析内容、组织项目、与AI协作写作，一站式完成从输入到输出的全流程。",
+      title1: "面向企业的",
+      title2: "生成式智能平台",
+      subtitle: "熵变智元(北京)科技有限公司：以“五大能力”驱动的一体化AI平台——智能交互与对话系统、知识智能与RAG、客户数据智能与超个性化、生成式AI与多模态创作、企业自动化与工作流编排。支持企业微信/飞书等生态集成，安全合规可审计。",
       ctaPrimary: "立即体验",
       ctaSecondary: "观看演示",
-      stats1: { value: "500+", label: "企业与团队" },
-      stats2: { value: "10M+", label: "处理与生成内容" },
+      stats1: { value: "100+", label: "项目与方案" },
+      stats2: { value: "10M+", label: "处理与生成内容量" },
       stats3: { value: "99%", label: "客户满意度" }
     },
     product: {
-      title1: "你创作所需的一切",
-      title2: "尽在一个工作台",
-      subtitle: "以项目为中心串联“采集-加工-创作-发布”。多模型协作与知识增强，助你高效产出高质量内容。",
+      title1: "从洞察到生成",
+      title2: "一体化智能工作台",
+      subtitle: "以项目为中心，贯穿“采集-研究-创作-发布”，结合企业级RAG、客户画像与多模态生成，沉淀数据资产并形成闭环优化。",
       features: [
-        { title: "极速响应", desc: "多模型并行推理，灵感随写随得" },
-        { title: "多人协作", desc: "团队共享素材与看板，实时协同" },
-        { title: "AI驱动", desc: "智能补全与结构化生成，稳定成文" }
+        { title: "顾问式对话", desc: "长程上下文与多模态理解，专业顾问式交互" },
+        { title: "企业级RAG", desc: "动态知识库与可追溯引用，事实一致可核验" },
+        { title: "超个性化", desc: "画像标签与A/B闭环，实现规模化千人千面" }
       ],
       cta: {
         primary: "免费试用",
@@ -58,44 +58,26 @@ export const translations = {
       }
     },
     features: {
-      header1: "一个空间",
-      header2: "承载你的所有创作",
-      desc: "以行业知识为底座的AI创作环境：采、研、构、写、发，一体化联动。",
+      header1: "五大核心能力",
+      header2: "协同增效",
+      desc: "以可复用的能力栈构建端到端AI解决方案：智能交互、知识智能、客户数据智能、生成式多模态、企业自动化。",
       items: [
-        {
-          title: "多源素材采集",
-          desc: "网页、视频、播客、PDF、Office、一键纳入项目看板"
-        },
-        {
-          title: "多模态解析",
-          desc: "音视频转写、关键信息提取、要点高亮与摘要"
-        },
-        {
-          title: "企业级RAG",
-          desc: "检索增强生成，引用可追溯，事实一致可核验"
-        },
-        {
-          title: "智能助手编排",
-          desc: "按领域定制AI助手，流程化完成调研与写作"
-        },
-        {
-          title: "模板与结构化输出",
-          desc: "文章、报告、脚本、清单，多格式一键导出"
-        },
-        {
-          title: "安全与合规",
-          desc: "数据隔离加密，权限细粒度控制，审计可追踪"
-        }
+        { title: "智能交互与对话系统", desc: "长程上下文、多模态理解、顾问式话术，拟人化专业沟通" },
+        { title: "知识智能与RAG", desc: "动态知识库与检索增强生成，引用可追溯、事实可核验" },
+        { title: "客户数据智能与超个性化", desc: "画像与标签体系、闭环AB实验，驱动千人千面服务" },
+        { title: "生成式AI与多模态创作", desc: "感知-决策-执行三层架构，内置同质化风险管理" },
+        { title: "企业自动化与工作流编排", desc: "低代码编排，原生集成企业微信/飞书等生态" },
+        { title: "安全与合规", desc: "数据隔离与加密、RBAC、审计追踪，企业级治理" }
       ],
-      bottomCtaTitle: "准备好提升内容产能了吗？",
-      bottomCtaDesc: "与上百家团队一起，开启以知识为中心的AI创作方式。",
+      bottomCtaTitle: "准备好提升内容与运营效率了吗？",
+      bottomCtaDesc: "以数据资产为底座，构建可持续的生成式智能能力。",
       bottomPrimary: "免费开始",
       bottomSecondary: "预约演示"
     },
     resources: {
       header1: "进一步了解",
-      header2: "熵变AI",
-      desc: "深入学习用法与最佳实践，释放更强生产力。",
+      header2: "熵变AI能力栈",
+      desc: "从对话到RAG，从画像到自动化：方法论与实战案例。",
       categories: {
         all: "全部",
         tips: "写作技巧",
@@ -103,30 +85,12 @@ export const translations = {
         templates: "模板"
       },
       list: {
-        guide: {
-          type: "指南",
-          title: "从采集到创作：工作流最佳实践",
-          desc: "以项目为中心管理素材与输出，标准化你的创作流程。",
-          read: "15 分钟阅读",
-          category: "写作技巧"
-        },
-        video: {
-          type: "视频",
-          title: "3 分钟上手熵变AI",
-          desc: "快速了解采集、研究、看板与AI协作写作。",
-          read: "3 分钟观看",
-          category: "教程"
-        },
-        template: {
-          type: "模板",
-          title: "报告与文章模板包",
-          desc: "专业模板即用即走，覆盖博客、白皮书、研究报告。",
-          read: "免费下载",
-          category: "模板"
-        },
+        guide: { type: "指南", title: "销售AI助手生态：从对话到转化的闭环", desc: "结合长程对话、RAG与自动化触达，构建增长引擎。", read: "15 分钟阅读", category: "方法论" },
+        video: { type: "视频", title: "3 分钟上手：企业级RAG与知识库", desc: "动态知识库、引用追溯与问答落地实操。", read: "3 分钟观看", category: "教程" },
+        template: { type: "模板", title: "RAG问答与报告模板包", desc: "标准化提示词、结构化大纲与可引用输出模板。", read: "免费下载", category: "模板" },
         readmore: "了解更多",
-        newsletterTitle: "订阅产品与写作更新",
-        newsletterDesc: "获取最新能力、实践案例与写作技巧。",
+        newsletterTitle: "订阅产品与实践更新",
+        newsletterDesc: "获取能力更新、行业案例与最佳实践。",
         subscribe: "订阅",
         privacy: "我们不会发送垃圾邮件，随时可取消订阅"
       }
@@ -175,9 +139,9 @@ export const translations = {
       ]
     },
     footer: {
-      topTitle1: "写出",
-      topTitle2: "更好的作品",
-      topDesc: "数百家团队信任熵变AI，立即开启你的创作旅程。",
+      topTitle1: "以数据资产为底座",
+      topTitle2: "驱动生成式智能",
+      topDesc: "熵变智元以五大能力为引擎，助力企业规模化、安全地使用生成式AI。",
       topPrimary: "免费开始",
       topSecondary: "联系销售",
       product: "产品",
@@ -240,47 +204,47 @@ export const translations = {
     lang: { zh: "中文", en: "EN" },
     hero: {
       badge: "New features",
-      title1: "Write",
-      title2: "something good",
-      subtitle: "Entropy AI is a creation and insight platform for enterprise knowledge and multimodal content. Capture, analyze, organize, collaborate with AI, and publish — all in one place.",
+      title1: "Enterprise",
+      title2: "GenAI Platform",
+      subtitle: "Entropy Intelligence: An integrated platform powered by five pillars — Conversational AI, Knowledge Intelligence (RAG), Customer Data Intelligence & Personalization, Generative & Multimodal Creation, and Enterprise Automation & Orchestration. Native integrations with WeCom/Feishu. Security-first and auditable.",
       ctaPrimary: "Try now",
       ctaSecondary: "Watch demo",
-      stats1: { value: "500+", label: "Teams" },
+      stats1: { value: "100+", label: "Projects & solutions" },
       stats2: { value: "10M+", label: "Processed & generated" },
       stats3: { value: "99%", label: "Satisfaction" }
     },
     product: {
-      title1: "Everything you need",
+      title1: "From insight to output",
       title2: "in one workspace",
-      subtitle: "Project-centric workflow across capture, research, creation and publishing. Knowledge-augmented, multi-model collaboration.",
+      subtitle: "Project-centric flow across capture, research, creation and publishing. Enterprise RAG, customer profiles and multimodal generation turn data into assets.",
       features: [
-        { title: "Lightning fast", desc: "Parallel multi-model reasoning for instant ideas" },
-        { title: "Collaborative", desc: "Share boards and work together in real time" },
-        { title: "AI-powered", desc: "Smart completion and structured generation" }
+        { title: "Advisory dialogs", desc: "Long-context, multimodal understanding and professional guidance" },
+        { title: "Enterprise RAG", desc: "Dynamic knowledge bases with citable, fact-checked answers" },
+        { title: "Personalization at scale", desc: "Profiles, labels and A/B loops for one-to-one experiences" }
       ],
       cta: { primary: "Start free", note: "No credit card required" }
     },
     features: {
-      header1: "One place",
-      header2: "for all your work",
-      desc: "An AI creation environment built on domain knowledge: collect, research, structure, write and ship.",
+      header1: "Five core pillars",
+      header2: "working together",
+      desc: "Reusable capabilities for end-to-end solutions: conversational AI, knowledge intelligence, customer data intelligence, generative multimodal, and enterprise automation.",
       items: [
-        { title: "Multi-source capture", desc: "Web, video, podcasts, PDFs and Office into one board" },
-        { title: "Multimodal parsing", desc: "Transcribe AV, extract key points and summaries" },
-        { title: "Enterprise RAG", desc: "Citable answers with traceable sources and fact checks" },
-        { title: "Assistant orchestration", desc: "Custom assistants to automate research and writing" },
-        { title: "Templates & outputs", desc: "Articles, reports and scripts with one-click export" },
-        { title: "Security & compliance", desc: "Encryption, RBAC and full audit trails" }
+        { title: "Conversational AI", desc: "Long-context dialogs, multimodal understanding and advisory talk tracks" },
+        { title: "Knowledge Intelligence (RAG)", desc: "Dynamic KB + RAG with citable, verifiable answers" },
+        { title: "Customer Intelligence & Personalization", desc: "Profiles, labels and A/B loops for 1:1 experiences" },
+        { title: "Generative & Multimodal Creation", desc: "Perception–Decision–Execution with sameness-risk control" },
+        { title: "Automation & Orchestration", desc: "Low-code workflows, native WeCom/Feishu integrations" },
+        { title: "Security & Compliance", desc: "Isolation, encryption, RBAC and audits" }
       ],
-      bottomCtaTitle: "Ready to level up your content?",
-      bottomCtaDesc: "Join teams adopting knowledge-centric creation.",
+      bottomCtaTitle: "Ready to boost content and ops?",
+      bottomCtaDesc: "Build sustainable GenAI on your data assets.",
       bottomPrimary: "Start free",
       bottomSecondary: "Book a demo"
     },
     resources: {
       header1: "Learn more about",
-      header2: "Entropy AI",
-      desc: "Guides and tutorials to unlock productivity.",
+      header2: "our capability stack",
+      desc: "From dialogs to RAG, profiles and automation: methods and case studies.",
       categories: {
         all: "All",
         tips: "Writing Tips",
@@ -288,30 +252,12 @@ export const translations = {
         templates: "Templates"
       },
       list: {
-        guide: {
-          type: "Guide",
-          title: "Best practices from capture to creation",
-          desc: "Manage materials and outputs with project-centric workflows.",
-          read: "15 min read",
-          category: "Writing Tips"
-        },
-        video: {
-          type: "Video",
-          title: "Get started in 3 minutes",
-          desc: "Quick tour of capture, research, boards and AI writing.",
-          read: "3 min watch",
-          category: "Tutorial"
-        },
-        template: {
-          type: "Template",
-          title: "Reports and article templates",
-          desc: "Production-grade templates for blogs, whitepapers and reports.",
-          read: "Free download",
-          category: "Templates"
-        },
+        guide: { type: "Guide", title: "Sales AI ecosystem: from dialog to conversion", desc: "Combine long-context, RAG and automation to build a growth engine.", read: "15 min read", category: "Methods" },
+        video: { type: "Video", title: "3-min primer: Enterprise RAG & KB", desc: "Dynamic KB, citable answers and Q&A in practice.", read: "3 min watch", category: "Tutorial" },
+        template: { type: "Template", title: "RAG Q&A and report pack", desc: "Standard prompts, structured outlines and citable outputs.", read: "Free download", category: "Templates" },
         readmore: "Read more",
         newsletterTitle: "Stay updated",
-        newsletterDesc: "Product updates and writing tips.",
+        newsletterDesc: "Capability updates, cases and best practices.",
         subscribe: "Subscribe",
         privacy: "No spam. Unsubscribe any time."
       }
