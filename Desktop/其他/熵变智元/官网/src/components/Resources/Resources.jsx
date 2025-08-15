@@ -1,42 +1,22 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { ArrowRight, BookOpen, Play, Download } from 'lucide-react'
+import { translations } from '../../i18n/translations'
+import { useApp } from '../../context/AppContext'
 
 const Resources = () => {
+  const { lang } = useApp()
+  const t = useMemo(() => translations[lang], [lang])
   const resources = [
-    {
-      type: "Guide",
-      title: "The Complete Guide to Content Writing",
-      description: "Master the art of creating compelling content that engages and converts your audience.",
-      image: "https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20content%20writing%20guide%20book%20cover%20design%20clean%20professional%20blue%20theme&image_size=landscape_4_3",
-      icon: <BookOpen className="w-5 h-5" />,
-      readTime: "15 min read",
-      category: "Writing Tips"
-    },
-    {
-      type: "Video",
-      title: "Getting Started with YouMind",
-      description: "Watch this comprehensive tutorial to learn how to make the most of YouMind's features.",
-      image: "https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=video%20tutorial%20thumbnail%20youmind%20interface%20modern%20clean%20design%20play%20button&image_size=landscape_4_3",
-      icon: <Play className="w-5 h-5" />,
-      readTime: "12 min watch",
-      category: "Tutorial"
-    },
-    {
-      type: "Template",
-      title: "Blog Post Templates Pack",
-      description: "Download our collection of proven blog post templates that drive engagement and traffic.",
-      image: "https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=blog%20post%20template%20design%20layout%20modern%20typography%20clean%20professional&image_size=landscape_4_3",
-      icon: <Download className="w-5 h-5" />,
-      readTime: "Free download",
-      category: "Templates"
-    }
+    { type: t.resources.list.guide.type, title: t.resources.list.guide.title, description: t.resources.list.guide.desc, image: "https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20content%20writing%20guide%20book%20cover%20design%20clean%20professional%20blue%20theme&image_size=landscape_4_3", icon: <BookOpen className="w-5 h-5" />, readTime: t.resources.list.guide.read, category: t.resources.list.guide.category },
+    { type: t.resources.list.video.type, title: t.resources.list.video.title, description: t.resources.list.video.desc, image: "https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=video%20tutorial%20youmind%20interface%20modern%20clean%20design%20play%20button&image_size=landscape_4_3", icon: <Play className="w-5 h-5" />, readTime: t.resources.list.video.read, category: t.resources.list.video.category },
+    { type: t.resources.list.template.type, title: t.resources.list.template.title, description: t.resources.list.template.desc, image: "https://trae-api-us.mchost.guru/api/ide/v1/text_to_image?prompt=blog%20post%20template%20design%20layout%20modern%20typography%20clean%20professional&image_size=landscape_4_3", icon: <Download className="w-5 h-5" />, readTime: t.resources.list.template.read, category: t.resources.list.template.category }
   ]
 
   const categories = [
-    { name: "All", count: 24, active: true },
-    { name: "Writing Tips", count: 8, active: false },
-    { name: "Tutorials", count: 6, active: false },
-    { name: "Templates", count: 10, active: false }
+    { name: t.resources.categories.all, count: 24, active: true },
+    { name: t.resources.categories.tips, count: 8, active: false },
+    { name: t.resources.categories.tutorials, count: 6, active: false },
+    { name: t.resources.categories.templates, count: 10, active: false }
   ]
 
   return (
@@ -45,13 +25,10 @@ const Resources = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-            Learn more about
-            <span className="block text-accent">YouMind</span>
+            {t.resources.header1}
+            <span className="block text-accent">{t.resources.header2}</span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover tips, tutorials, and resources to help you become a better writer 
-            and make the most of YouMind's powerful features.
-          </p>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t.resources.desc}</p>
         </div>
         
         {/* Category Filter */}
@@ -110,7 +87,7 @@ const Resources = () => {
                 </p>
                 
                 <div className="flex items-center text-primary font-medium group-hover:text-accent transition-colors">
-                  <span className="text-sm">Read more</span>
+                  <span className="text-sm">{t.resources.list.readmore}</span>
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
@@ -121,13 +98,8 @@ const Resources = () => {
         {/* Newsletter Signup */}
         <div className="bg-white rounded-2xl p-8 shadow-lg">
           <div className="max-w-2xl mx-auto text-center">
-            <h3 className="text-2xl font-bold text-primary mb-4">
-              Stay updated with writing tips
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Get the latest writing tips, YouMind updates, and exclusive content 
-              delivered straight to your inbox.
-            </p>
+            <h3 className="text-2xl font-bold text-primary mb-4">{t.resources.list.newsletterTitle}</h3>
+            <p className="text-gray-600 mb-6">{t.resources.list.newsletterDesc}</p>
             
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input 
@@ -135,14 +107,10 @@ const Resources = () => {
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
-              <button className="btn-primary whitespace-nowrap">
-                Subscribe
-              </button>
+              <button className="btn-primary whitespace-nowrap">{t.resources.list.subscribe}</button>
             </div>
             
-            <p className="text-xs text-gray-500 mt-4">
-              No spam, unsubscribe at any time. Read our privacy policy.
-            </p>
+            <p className="text-xs text-gray-500 mt-4">{t.resources.list.privacy}</p>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import Features from './components/Features/Features'
 import Testimonials from './components/Testimonials/Testimonials'
 import Resources from './components/Resources/Resources'
 import Footer from './components/Footer/Footer'
+import AuthModal from './components/Auth/AuthModal'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Resources />
       </main>
       <Footer />
+      <AuthModal />
     </div>
   )
 }

@@ -1,31 +1,35 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { ArrowRight, Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from 'lucide-react'
+import { translations } from '../../i18n/translations'
+import { useApp } from '../../context/AppContext'
 
 const Footer = () => {
+  const { lang } = useApp()
+  const t = useMemo(() => translations[lang], [lang])
   const footerLinks = {
     product: [
-      { name: "Features", href: "#features" },
-      { name: "Pricing", href: "#pricing" },
-      { name: "Templates", href: "#templates" },
-      { name: "Integrations", href: "#integrations" }
+      { name: t.footer.links.features, href: "#features" },
+      { name: t.footer.links.pricing, href: "#pricing" },
+      { name: t.footer.links.templates, href: "#templates" },
+      { name: t.footer.links.integrations, href: "#integrations" }
     ],
     company: [
-      { name: "About Us", href: "#about" },
-      { name: "Careers", href: "#careers" },
-      { name: "Press", href: "#press" },
-      { name: "Contact", href: "#contact" }
+      { name: t.footer.links.about, href: "#about" },
+      { name: t.footer.links.careers, href: "#careers" },
+      { name: t.footer.links.press, href: "#press" },
+      { name: t.footer.links.contact, href: "#contact" }
     ],
     resources: [
-      { name: "Blog", href: "#blog" },
-      { name: "Help Center", href: "#help" },
-      { name: "Community", href: "#community" },
-      { name: "API Docs", href: "#api" }
+      { name: t.footer.links.blog, href: "#blog" },
+      { name: t.footer.links.help, href: "#help" },
+      { name: t.footer.links.community, href: "#community" },
+      { name: t.footer.links.api, href: "#api" }
     ],
     legal: [
-      { name: "Privacy Policy", href: "#privacy" },
-      { name: "Terms of Service", href: "#terms" },
-      { name: "Cookie Policy", href: "#cookies" },
-      { name: "GDPR", href: "#gdpr" }
+      { name: t.footer.links.privacy, href: "#privacy" },
+      { name: t.footer.links.terms, href: "#terms" },
+      { name: t.footer.links.cookies, href: "#cookies" },
+      { name: t.footer.links.gdpr, href: "#gdpr" }
     ]
   }
 
@@ -43,21 +47,16 @@ const Footer = () => {
         <div className="container-max section-padding">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Write something
-              <span className="block text-accent">good</span>
+              {t.footer.topTitle1}
+              <span className="block text-accent">{t.footer.topTitle2}</span>
             </h2>
-            <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join thousands of writers who trust YouMind to bring their ideas to life. 
-              Start your free trial today.
-            </p>
+            <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">{t.footer.topDesc}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-accent text-primary px-8 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors inline-flex items-center justify-center group">
-                Start Free Trial
+                {t.footer.topPrimary}
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="border border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-primary transition-colors">
-                Contact Sales
-              </button>
+              <button className="border border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-primary transition-colors">{t.footer.topSecondary}</button>
             </div>
           </div>
         </div>
@@ -70,33 +69,21 @@ const Footer = () => {
             {/* Company Info */}
             <div className="lg:col-span-2">
               <div className="mb-6">
-                <span className="text-2xl font-bold text-accent">YouMind</span>
+                <span className="text-2xl font-bold text-accent">{t.brand.name}</span>
               </div>
-              <p className="text-gray-300 mb-6 leading-relaxed">
-                Empowering writers worldwide with intelligent tools and seamless collaboration. 
-                Transform your ideas into compelling content.
-              </p>
+              <p className="text-gray-300 mb-6 leading-relaxed">{t.hero.subtitle}</p>
               
               {/* Contact Info */}
               <div className="space-y-3 text-sm text-gray-300">
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-4 h-4" />
-                  <span>hello@youmind.com</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Phone className="w-4 h-4" />
-                  <span>+1 (555) 123-4567</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <MapPin className="w-4 h-4" />
-                  <span>San Francisco, CA</span>
-                </div>
+                <div className="flex items-center space-x-3"><Mail className="w-4 h-4" /><span>{t.footer.contact.email}</span></div>
+                <div className="flex items-center space-x-3"><Phone className="w-4 h-4" /><span>{t.footer.contact.phone}</span></div>
+                <div className="flex items-center space-x-3"><MapPin className="w-4 h-4" /><span>{t.footer.contact.address}</span></div>
               </div>
             </div>
             
             {/* Product Links */}
             <div>
-              <h3 className="font-semibold text-white mb-4">Product</h3>
+              <h3 className="font-semibold text-white mb-4">{t.footer.product}</h3>
               <ul className="space-y-3">
                 {footerLinks.product.map((link, index) => (
                   <li key={index}>
@@ -110,7 +97,7 @@ const Footer = () => {
             
             {/* Company Links */}
             <div>
-              <h3 className="font-semibold text-white mb-4">Company</h3>
+              <h3 className="font-semibold text-white mb-4">{t.footer.company}</h3>
               <ul className="space-y-3">
                 {footerLinks.company.map((link, index) => (
                   <li key={index}>
@@ -124,7 +111,7 @@ const Footer = () => {
             
             {/* Resources Links */}
             <div>
-              <h3 className="font-semibold text-white mb-4">Resources</h3>
+              <h3 className="font-semibold text-white mb-4">{t.footer.resources}</h3>
               <ul className="space-y-3">
                 {footerLinks.resources.map((link, index) => (
                   <li key={index}>
@@ -138,7 +125,7 @@ const Footer = () => {
             
             {/* Legal Links */}
             <div>
-              <h3 className="font-semibold text-white mb-4">Legal</h3>
+              <h3 className="font-semibold text-white mb-4">{t.footer.legal}</h3>
               <ul className="space-y-3">
                 {footerLinks.legal.map((link, index) => (
                   <li key={index}>
@@ -156,9 +143,7 @@ const Footer = () => {
         <div className="border-t border-gray-700 py-8 px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
-            <div className="text-sm text-gray-400">
-              © 2024 YouMind. All rights reserved.
-            </div>
+            <div className="text-sm text-gray-400">{t.footer.copyright}</div>
             
             {/* Social Links */}
             <div className="flex items-center space-x-4">

@@ -1,8 +1,12 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { useApp } from '../../context/AppContext'
+import { translations } from '../../i18n/translations'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { lang, setLang, user, setUser, setAuthModal } = useApp()
+  const t = useMemo(() => translations[lang], [lang])
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -15,7 +19,7 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <span className="text-2xl font-bold text-primary">YouMind</span>
+              <span className="text-2xl font-bold text-primary">{t.brand.name}</span>
             </div>
           </div>
 
@@ -23,25 +27,38 @@ const Header = () => {
           <nav className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
               <a href="#hero" className="text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-                Home
+                {t.nav.home}
               </a>
               <a href="#features" className="text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-                Features
+                {t.nav.features}
               </a>
               <a href="#testimonials" className="text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-                Reviews
+                {t.nav.reviews}
               </a>
               <a href="#resources" className="text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-                Resources
+                {t.nav.resources}
               </a>
+              <div className="ml-4">
+                <button onClick={()=>setLang(lang==='zh'?'en':'zh')} className="text-gray-700 hover:text-primary px-3 py-2 text-sm font-medium border rounded-lg">
+                  {lang==='zh'? t.lang.en : t.lang.zh}
+                </button>
+              </div>
             </div>
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden md:block">
-            <button className="btn-primary">
-              Get Started
-            </button>
+          <div className="hidden md:flex items-center gap-3">
+            {user ? (
+              <>
+                <span className="text-sm text-gray-600">{user.email}</span>
+                <button onClick={()=>setUser(null)} className="btn-secondary">{t.auth.logout}</button>
+              </>
+            ) : (
+              <>
+                <button onClick={()=>setAuthModal({ open: true, mode: 'login' })} className="btn-secondary">{t.auth.login}</button>
+                <button onClick={()=>setAuthModal({ open: true, mode: 'register' })} className="btn-primary">{t.auth.register}</button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -60,21 +77,29 @@ const Header = () => {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
               <a href="#hero" className="text-gray-700 hover:text-primary block px-3 py-2 text-base font-medium">
-                Home
+                {t.nav.home}
               </a>
               <a href="#features" className="text-gray-700 hover:text-primary block px-3 py-2 text-base font-medium">
-                Features
+                {t.nav.features}
               </a>
               <a href="#testimonials" className="text-gray-700 hover:text-primary block px-3 py-2 text-base font-medium">
-                Reviews
+                {t.nav.reviews}
               </a>
               <a href="#resources" className="text-gray-700 hover:text-primary block px-3 py-2 text-base font-medium">
-                Resources
+                {t.nav.resources}
               </a>
+              <button onClick={()=>setLang(lang==='zh'?'en':'zh')} className="text-gray-700 hover:text-primary block px-3 py-2 text-base font-medium border rounded-lg">
+                {lang==='zh'? t.lang.en : t.lang.zh}
+              </button>
               <div className="px-3 py-2">
-                <button className="btn-primary w-full">
-                  Get Started
-                </button>
+                {user ? (
+                  <button onClick={()=>setUser(null)} className="btn-primary w-full">{t.auth.logout}</button>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    <button onClick={()=>setAuthModal({ open: true, mode: 'login' })} className="btn-secondary w-full">{t.auth.login}</button>
+                    <button onClick={()=>setAuthModal({ open: true, mode: 'register' })} className="btn-primary w-full">{t.auth.register}</button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

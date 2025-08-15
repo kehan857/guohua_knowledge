@@ -1,23 +1,15 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Check, Star, Users, Zap } from 'lucide-react'
+import { translations } from '../../i18n/translations'
+import { useApp } from '../../context/AppContext'
 
 const ProductShowcase = () => {
+  const { lang } = useApp()
+  const t = useMemo(() => translations[lang], [lang])
   const features = [
-    {
-      icon: <Zap className="w-5 h-5" />,
-      title: "Lightning Fast",
-      description: "Write and edit at the speed of thought"
-    },
-    {
-      icon: <Users className="w-5 h-5" />,
-      title: "Collaborative",
-      description: "Work together with your team seamlessly"
-    },
-    {
-      icon: <Star className="w-5 h-5" />,
-      title: "AI-Powered",
-      description: "Smart suggestions and auto-completion"
-    }
+    { icon: <Zap className="w-5 h-5" />, title: t.product.features[0].title, description: t.product.features[0].desc },
+    { icon: <Users className="w-5 h-5" />, title: t.product.features[1].title, description: t.product.features[1].desc },
+    { icon: <Star className="w-5 h-5" />, title: t.product.features[2].title, description: t.product.features[2].desc }
   ]
 
   return (
@@ -100,13 +92,10 @@ const ProductShowcase = () => {
           <div>
             <div className="mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-                Everything you need to
-                <span className="block text-accent">write brilliantly</span>
+                {t.product.title1}
+                <span className="block text-accent">{t.product.title2}</span>
               </h2>
-              <p className="text-lg text-gray-600">
-                Our intuitive interface combines powerful writing tools with AI assistance 
-                to help you create content that resonates with your audience.
-              </p>
+              <p className="text-lg text-gray-600">{t.product.subtitle}</p>
             </div>
             
             {/* Feature List */}
@@ -126,12 +115,10 @@ const ProductShowcase = () => {
             
             {/* CTA */}
             <div className="flex items-center space-x-4">
-              <button className="btn-primary">
-                Try It Free
-              </button>
+              <button className="btn-primary">{t.product.cta.primary}</button>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <Check className="w-4 h-4 text-green-500" />
-                <span>No credit card required</span>
+                <span>{t.product.cta.note}</span>
               </div>
             </div>
           </div>

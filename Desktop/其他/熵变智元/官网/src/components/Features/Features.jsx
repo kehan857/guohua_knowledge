@@ -1,44 +1,18 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { BookOpen, Brain, FileText, Globe, Palette, Shield } from 'lucide-react'
+import { translations } from '../../i18n/translations'
+import { useApp } from '../../context/AppContext'
 
 const Features = () => {
+  const { lang } = useApp()
+  const t = useMemo(() => translations[lang], [lang])
   const features = [
-    {
-      icon: <FileText className="w-8 h-8" />,
-      title: "Smart Editor",
-      description: "Advanced text editor with real-time collaboration, version control, and intelligent formatting.",
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
-      icon: <Brain className="w-8 h-8" />,
-      title: "AI Assistant",
-      description: "Get writing suggestions, grammar corrections, and content ideas powered by advanced AI.",
-      color: "from-purple-500 to-pink-500"
-    },
-    {
-      icon: <Palette className="w-8 h-8" />,
-      title: "Beautiful Templates",
-      description: "Choose from hundreds of professionally designed templates for any type of content.",
-      color: "from-green-500 to-emerald-500"
-    },
-    {
-      icon: <Globe className="w-8 h-8" />,
-      title: "Publish Anywhere",
-      description: "Export to multiple formats and publish directly to your favorite platforms.",
-      color: "from-orange-500 to-red-500"
-    },
-    {
-      icon: <BookOpen className="w-8 h-8" />,
-      title: "Research Tools",
-      description: "Built-in research capabilities with citation management and fact-checking.",
-      color: "from-indigo-500 to-purple-500"
-    },
-    {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Secure & Private",
-      description: "Your content is encrypted and secure. We never share your data with third parties.",
-      color: "from-gray-500 to-slate-500"
-    }
+    { icon: <FileText className="w-8 h-8" />, title: t.features.items[0].title, description: t.features.items[0].desc, color: "from-blue-500 to-cyan-500" },
+    { icon: <Brain className="w-8 h-8" />, title: t.features.items[1].title, description: t.features.items[1].desc, color: "from-purple-500 to-pink-500" },
+    { icon: <Palette className="w-8 h-8" />, title: t.features.items[2].title, description: t.features.items[2].desc, color: "from-green-500 to-emerald-500" },
+    { icon: <Globe className="w-8 h-8" />, title: t.features.items[3].title, description: t.features.items[3].desc, color: "from-orange-500 to-red-500" },
+    { icon: <BookOpen className="w-8 h-8" />, title: t.features.items[4].title, description: t.features.items[4].desc, color: "from-indigo-500 to-purple-500" },
+    { icon: <Shield className="w-8 h-8" />, title: t.features.items[5].title, description: t.features.items[5].desc, color: "from-gray-500 to-slate-500" }
   ]
 
   return (
@@ -47,13 +21,10 @@ const Features = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-            One place for
-            <span className="block text-accent">you</span>
+            {t.features.header1}
+            <span className="block text-accent">{t.features.header2}</span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Everything you need to create, collaborate, and publish amazing content. 
-            All in one powerful platform designed for modern writers.
-          </p>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t.features.desc}</p>
         </div>
         
         {/* Features Grid */}
@@ -76,7 +47,7 @@ const Features = () => {
               {/* Hover Effect */}
               <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <button className="text-primary font-medium text-sm hover:text-accent transition-colors">
-                  Learn more →
+                  →
                 </button>
               </div>
             </div>
@@ -86,19 +57,11 @@ const Features = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <div className="bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-primary mb-4">
-              Ready to transform your writing?
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Join thousands of writers who have already discovered the power of YouMind.
-            </p>
+            <h3 className="text-2xl font-bold text-primary mb-4">{t.features.bottomCtaTitle}</h3>
+            <p className="text-gray-600 mb-6">{t.features.bottomCtaDesc}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-primary">
-                Start Free Trial
-              </button>
-              <button className="btn-secondary">
-                Schedule Demo
-              </button>
+              <button className="btn-primary">{t.features.bottomPrimary}</button>
+              <button className="btn-secondary">{t.features.bottomSecondary}</button>
             </div>
           </div>
         </div>

@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { ArrowRight, PenTool, Sparkles } from 'lucide-react'
+import { useApp } from '../../context/AppContext'
+import { translations } from '../../i18n/translations'
 
 const HeroSection = () => {
+  const { lang, setAuthModal } = useApp()
+  const t = useMemo(() => translations[lang], [lang])
   return (
     <section id="hero" className="section-padding bg-gradient-to-br from-muted to-white relative overflow-hidden">
       <div className="container-max">
@@ -11,42 +15,41 @@ const HeroSection = () => {
             <div className="mb-6">
               <span className="inline-flex items-center px-4 py-2 rounded-full bg-accent/10 text-accent font-medium text-sm mb-4">
                 <Sparkles className="w-4 h-4 mr-2" />
-                New Features Available
+                {t.hero.badge}
               </span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-6 leading-tight">
-              Write something
-              <span className="block text-accent">good</span>
+              {t.hero.title1}
+              <span className="block text-accent">{t.hero.title2}</span>
             </h1>
             
             <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl">
-              Transform your ideas into compelling content with YouMind's powerful writing tools. 
-              Create, edit, and publish with confidence.
+              {t.hero.subtitle}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="btn-primary inline-flex items-center justify-center group">
-                Start Writing
+              <button onClick={()=>setAuthModal({ open: true, mode: 'register' })} className="btn-primary inline-flex items-center justify-center group">
+                {t.hero.ctaPrimary}
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button className="btn-secondary">
-                Watch Demo
+                {t.hero.ctaSecondary}
               </button>
             </div>
             
             <div className="mt-12 flex items-center justify-center lg:justify-start space-x-8">
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">10K+</div>
-                <div className="text-sm text-gray-600">Active Writers</div>
+                <div className="text-2xl font-bold text-primary">{t.hero.stats1.value}</div>
+                <div className="text-sm text-gray-600">{t.hero.stats1.label}</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">50M+</div>
-                <div className="text-sm text-gray-600">Words Written</div>
+                <div className="text-2xl font-bold text-primary">{t.hero.stats2.value}</div>
+                <div className="text-sm text-gray-600">{t.hero.stats2.label}</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">99%</div>
-                <div className="text-sm text-gray-600">Satisfaction</div>
+                <div className="text-2xl font-bold text-primary">{t.hero.stats3.value}</div>
+                <div className="text-sm text-gray-600">{t.hero.stats3.label}</div>
               </div>
             </div>
           </div>
