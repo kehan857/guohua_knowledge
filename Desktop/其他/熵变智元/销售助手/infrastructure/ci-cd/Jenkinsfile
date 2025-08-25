@@ -1,0 +1,505 @@
+// 熵变智元AI销售助手 Jenkins CI/CD 流水线
+
+pipeline {
+    agent any
+    
+    // 环境变量
+    environment {
+        // 项目配置
+        PROJECT_NAME = 'ai-sales-assistant'
+        IMAGE_NAME = 'ai-sales-assistant'
+        
+        // Docker Registry
+        DOCKER_REGISTRY = credentials('docker-registry-url')
+        DOCKER_CREDENTIALS = credentials('docker-registry-credentials')
+        
+        // Kubernetes配置
+        K8S_NAMESPACE = 'ai-sales-assistant'
+        K8S_CREDENTIALS = credentials('k8s-credentials')
+        
+        // 通知配置
+        SLACK_CHANNEL = '#devops'
+        EMAIL_RECIPIENTS = 'devops@yourcompany.com'
+        
+        // 版本号
+        VERSION = "${BUILD_NUMBER}"
+        GIT_COMMIT_SHORT = "${GIT_COMMIT[0..7]}"
+    }
+    
+    // 构建参数
+    parameters {
+        choice(
+            name: 'DEPLOY_ENVIRONMENT',
+            choices: ['dev', 'staging', 'production'],
+            description: '部署环境'
+        )
+        booleanParam(
+            name: 'SKIP_TESTS',
+            defaultValue: false,
+            description: '跳过测试'
+        )
+        booleanParam(
+            name: 'FORCE_DEPLOY',
+            defaultValue: false,
+            description: '强制部署'
+        )
+        string(
+            name: 'GIT_BRANCH',
+            defaultValue: 'main',
+            description: 'Git分支'
+        )
+    }
+    
+    // 构建触发器
+    triggers {
+        // 定时构建 (每天凌晨2点)
+        cron('0 2 * * *')
+        
+        // Git提交触发
+        githubPush()
+    }
+    
+    // 构建选项
+    options {
+        // 构建历史保留
+        buildDiscarder(logRotator(
+            numToKeepStr: '50',
+            artifactNumToKeepStr: '20'
+        ))
+        
+        // 超时设置
+        timeout(time: 60, unit: 'MINUTES')
+        
+        // 并发构建控制
+        disableConcurrentBuilds()
+        
+        // 时间戳
+        timestamps()
+    }
+    
+    stages {
+        // 1. 准备阶段
+        stage('Preparation') {
+            steps {
+                script {
+                    // 打印环境信息
+                    echo "🚀 开始构建 ${PROJECT_NAME}"
+                    echo "📝 分支: ${params.GIT_BRANCH}"
+                    echo "🔢 版本: ${VERSION}"
+                    echo "🌍 环境: ${params.DEPLOY_ENVIRONMENT}"
+                    echo "💾 Git提交: ${GIT_COMMIT_SHORT}"
+                    
+                    // 设置构建描述
+                    currentBuild.description = "v${VERSION} - ${params.DEPLOY_ENVIRONMENT}"
+                }
+                
+                // 清理工作空间
+                cleanWs()
+                
+                // 检出代码
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${params.GIT_BRANCH}"]],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [
+                        [$class: 'CloneOption', depth: 1, noTags: false, reference: '', shallow: true]
+                    ],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[
+                        credentialsId: 'git-credentials',
+                        url: 'https://github.com/yourcompany/ai-sales-assistant.git'
+                    ]]
+                ])
+                
+                // 安装依赖工具
+                sh '''
+                    echo "📦 安装构建依赖..."
+                    python3 -m pip install --upgrade pip
+                    pip install -r fastapi-backend/requirements.txt
+                '''
+            }
+        }
+        
+        // 2. 代码质量检查
+        stage('Code Quality') {
+            parallel {
+                // 静态代码分析
+                stage('Static Analysis') {
+                    steps {
+                        script {
+                            echo "🔍 执行静态代码分析..."
+                            sh '''
+                                # Python代码检查
+                                flake8 fastapi-backend --max-line-length=120 --ignore=E203,W503
+                                
+                                # 安全检查
+                                bandit -r fastapi-backend -f json -o bandit-report.json || true
+                                
+                                # 依赖安全检查
+                                safety check --json --output safety-report.json || true
+                            '''
+                        }
+                    }
+                    post {
+                        always {
+                            // 发布报告
+                            recordIssues(
+                                enabledForFailure: true,
+                                tools: [
+                                    flake8(pattern: 'flake8.log'),
+                                    pyLint(pattern: 'pylint.log')
+                                ]
+                            )
+                        }
+                    }
+                }
+                
+                // 类型检查
+                stage('Type Check') {
+                    steps {
+                        script {
+                            echo "🔍 执行类型检查..."
+                            sh '''
+                                cd fastapi-backend
+                                mypy . --ignore-missing-imports --html-report mypy-report
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 3. 单元测试
+        stage('Unit Tests') {
+            when {
+                not { params.SKIP_TESTS }
+            }
+            steps {
+                script {
+                    echo "🧪 执行单元测试..."
+                    sh '''
+                        cd fastapi-backend
+                        
+                        # 设置测试环境
+                        export TESTING=true
+                        export DATABASE_URL="sqlite:///./test.db"
+                        
+                        # 运行测试
+                        python -m pytest tests/ \
+                            --junitxml=test-results.xml \
+                            --cov=app \
+                            --cov-report=xml \
+                            --cov-report=html \
+                            -v
+                    '''
+                }
+            }
+            post {
+                always {
+                    // 发布测试结果
+                    publishTestResults(
+                        testResultsPattern: 'fastapi-backend/test-results.xml'
+                    )
+                    
+                    // 发布覆盖率报告
+                    publishCoverage(
+                        adapters: [
+                            coberturaAdapter('fastapi-backend/coverage.xml')
+                        ],
+                        sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+                    )
+                }
+            }
+        }
+        
+        // 4. 集成测试
+        stage('Integration Tests') {
+            when {
+                not { params.SKIP_TESTS }
+            }
+            steps {
+                script {
+                    echo "🔗 执行集成测试..."
+                    sh '''
+                        # 启动测试环境
+                        docker-compose -f infrastructure/docker/docker-compose.test.yml up -d
+                        
+                        # 等待服务启动
+                        sleep 30
+                        
+                        # 执行集成测试
+                        python -m pytest tests/integration/ -v
+                        
+                        # 清理测试环境
+                        docker-compose -f infrastructure/docker/docker-compose.test.yml down
+                    '''
+                }
+            }
+        }
+        
+        // 5. 安全扫描
+        stage('Security Scan') {
+            parallel {
+                // 容器安全扫描
+                stage('Container Scan') {
+                    steps {
+                        script {
+                            echo "🔒 执行容器安全扫描..."
+                            sh '''
+                                # 构建测试镜像
+                                docker build -f infrastructure/docker/Dockerfile -t ${IMAGE_NAME}:security-scan fastapi-backend/
+                                
+                                # 容器安全扫描
+                                trivy image --format json --output trivy-report.json ${IMAGE_NAME}:security-scan || true
+                            '''
+                        }
+                    }
+                }
+                
+                // 代码安全扫描
+                stage('Code Scan') {
+                    steps {
+                        script {
+                            echo "🔒 执行代码安全扫描..."
+                            sh '''
+                                # SonarQube扫描
+                                sonar-scanner \
+                                    -Dsonar.projectKey=${PROJECT_NAME} \
+                                    -Dsonar.sources=fastapi-backend \
+                                    -Dsonar.host.url=${SONAR_HOST_URL} \
+                                    -Dsonar.login=${SONAR_AUTH_TOKEN}
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 6. 构建镜像
+        stage('Build Image') {
+            steps {
+                script {
+                    echo "🏗️ 构建Docker镜像..."
+                    
+                    // 构建镜像
+                    def image = docker.build(
+                        "${DOCKER_REGISTRY}/${IMAGE_NAME}:${VERSION}",
+                        "-f infrastructure/docker/Dockerfile fastapi-backend/"
+                    )
+                    
+                    // 标记镜像
+                    image.tag("${VERSION}")
+                    image.tag("latest")
+                    image.tag("${params.DEPLOY_ENVIRONMENT}")
+                    
+                    // 推送镜像
+                    docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
+                        image.push("${VERSION}")
+                        image.push("latest")
+                        image.push("${params.DEPLOY_ENVIRONMENT}")
+                    }
+                    
+                    echo "✅ 镜像构建并推送完成: ${DOCKER_REGISTRY}/${IMAGE_NAME}:${VERSION}"
+                }
+            }
+        }
+        
+        // 7. 部署
+        stage('Deploy') {
+            when {
+                anyOf {
+                    environment name: 'DEPLOY_ENVIRONMENT', value: 'dev'
+                    environment name: 'DEPLOY_ENVIRONMENT', value: 'staging'
+                    allOf {
+                        environment name: 'DEPLOY_ENVIRONMENT', value: 'production'
+                        anyOf {
+                            params.FORCE_DEPLOY
+                            branch 'main'
+                        }
+                    }
+                }
+            }
+            steps {
+                script {
+                    echo "🚀 部署到 ${params.DEPLOY_ENVIRONMENT} 环境..."
+                    
+                    // 根据环境选择部署方式
+                    if (params.DEPLOY_ENVIRONMENT == 'dev') {
+                        deployToDev()
+                    } else if (params.DEPLOY_ENVIRONMENT == 'staging') {
+                        deployToStaging()
+                    } else if (params.DEPLOY_ENVIRONMENT == 'production') {
+                        deployToProduction()
+                    }
+                }
+            }
+        }
+        
+        // 8. 部署验证
+        stage('Deployment Verification') {
+            steps {
+                script {
+                    echo "✅ 验证部署状态..."
+                    
+                    // 健康检查
+                    def healthCheckUrl = getHealthCheckUrl(params.DEPLOY_ENVIRONMENT)
+                    
+                    retry(5) {
+                        sleep(30)
+                        sh """
+                            curl -f ${healthCheckUrl}/health || exit 1
+                        """
+                    }
+                    
+                    echo "✅ 部署验证成功"
+                }
+            }
+        }
+        
+        // 9. 性能测试
+        stage('Performance Test') {
+            when {
+                environment name: 'DEPLOY_ENVIRONMENT', value: 'staging'
+            }
+            steps {
+                script {
+                    echo "⚡ 执行性能测试..."
+                    sh '''
+                        # 使用K6进行性能测试
+                        k6 run tests/performance/load-test.js
+                    '''
+                }
+            }
+        }
+    }
+    
+    // 构建后操作
+    post {
+        always {
+            script {
+                echo "🧹 执行清理操作..."
+                
+                // 清理Docker镜像
+                sh '''
+                    docker image prune -f
+                    docker container prune -f
+                '''
+                
+                // 归档构件
+                archiveArtifacts(
+                    artifacts: '**/*.xml,**/*.json,**/*.html',
+                    allowEmptyArchive: true
+                )
+            }
+        }
+        
+        success {
+            script {
+                echo "✅ 构建成功！"
+                
+                // 发送成功通知
+                sendNotification(
+                    'success',
+                    "✅ ${PROJECT_NAME} v${VERSION} 构建成功",
+                    "分支: ${params.GIT_BRANCH}\n环境: ${params.DEPLOY_ENVIRONMENT}\n提交: ${GIT_COMMIT_SHORT}"
+                )
+            }
+        }
+        
+        failure {
+            script {
+                echo "❌ 构建失败！"
+                
+                // 发送失败通知
+                sendNotification(
+                    'failure',
+                    "❌ ${PROJECT_NAME} v${VERSION} 构建失败",
+                    "分支: ${params.GIT_BRANCH}\n环境: ${params.DEPLOY_ENVIRONMENT}\n提交: ${GIT_COMMIT_SHORT}\n错误: ${currentBuild.description}"
+                )
+            }
+        }
+        
+        unstable {
+            script {
+                echo "⚠️ 构建不稳定！"
+                
+                // 发送警告通知
+                sendNotification(
+                    'warning',
+                    "⚠️ ${PROJECT_NAME} v${VERSION} 构建不稳定",
+                    "分支: ${params.GIT_BRANCH}\n环境: ${params.DEPLOY_ENVIRONMENT}\n提交: ${GIT_COMMIT_SHORT}"
+                )
+            }
+        }
+    }
+}
+
+// 自定义函数
+def deployToDev() {
+    sh '''
+        echo "部署到开发环境..."
+        ./infrastructure/scripts/deploy.sh docker -e .env.dev --skip-migrate
+    '''
+}
+
+def deployToStaging() {
+    sh '''
+        echo "部署到预发布环境..."
+        ./infrastructure/scripts/deploy.sh k8s -n ai-sales-assistant-staging -v ${VERSION}
+    '''
+}
+
+def deployToProduction() {
+    // 需要人工确认
+    input(
+        message: "确认部署到生产环境？",
+        parameters: [
+            booleanParam(
+                name: 'CONFIRM_PRODUCTION_DEPLOY',
+                defaultValue: false,
+                description: '确认部署到生产环境'
+            )
+        ]
+    )
+    
+    sh '''
+        echo "部署到生产环境..."
+        ./infrastructure/scripts/deploy.sh k8s -n ai-sales-assistant -v ${VERSION}
+    '''
+}
+
+def getHealthCheckUrl(environment) {
+    def urls = [
+        'dev': 'http://localhost:8000',
+        'staging': 'https://staging-api.yourdomain.com',
+        'production': 'https://api.yourdomain.com'
+    ]
+    return urls[environment]
+}
+
+def sendNotification(type, title, message) {
+    // Slack通知
+    if (env.SLACK_WEBHOOK_URL) {
+        def colors = [
+            'success': 'good',
+            'failure': 'danger',
+            'warning': 'warning'
+        ]
+        
+        slackSend(
+            channel: "${SLACK_CHANNEL}",
+            color: colors[type],
+            message: "${title}\n${message}"
+        )
+    }
+    
+    // 邮件通知
+    if (type == 'failure') {
+        emailext(
+            subject: "${title}",
+            body: "${message}",
+            to: "${EMAIL_RECIPIENTS}"
+        )
+    }
+}
+

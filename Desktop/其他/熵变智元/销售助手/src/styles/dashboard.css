@@ -1,0 +1,364 @@
+/* 主控面板专用样式 */
+
+/* 指标卡片网格 */
+.metrics-section {
+  margin-bottom: var(--space-10);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+}
+
+/* 数据卡片增强样式 */
+.data-card .value-primary {
+  color: var(--primary-600);
+  font-weight: 700;
+}
+
+.data-card .value-secondary {
+  color: var(--gray-500);
+  font-size: var(--text-lg);
+  margin-left: var(--space-2);
+}
+
+.budget-progress {
+  margin-top: var(--space-2);
+}
+
+/* 分析区域 */
+.analytics-section {
+  margin-bottom: var(--space-10);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+/* 图表卡片 */
+.chart-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.chart-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.chart-controls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.chart-content {
+  padding: var(--space-4) var(--space-6);
+  height: 200px;
+  position: relative;
+}
+
+.chart-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-legend {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--gray-50);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--gray-600);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* 排行榜样式 */
+.ranking-content {
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.ranking-item:last-child {
+  border-bottom: none;
+}
+
+.ranking-position {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-500);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.ranking-info {
+  flex: 1;
+}
+
+.ranking-name {
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: var(--space-1);
+}
+
+.ranking-dept {
+  font-size: var(--text-xs);
+  color: var(--gray-500);
+}
+
+.ranking-usage {
+  text-align: right;
+  min-width: 80px;
+}
+
+.usage-amount {
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-1);
+}
+
+.usage-bar {
+  width: 60px;
+  height: 4px;
+  background-color: var(--gray-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-left: auto;
+}
+
+.usage-fill {
+  height: 100%;
+  background-color: var(--primary-500);
+  transition: width var(--transition-normal);
+}
+
+/* 告警列表样式 */
+.alerts-content {
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
+  transition: background-color var(--transition-fast);
+}
+
+.alert-item:last-child {
+  margin-bottom: 0;
+}
+
+.alert-item.urgent {
+  background-color: var(--error-50);
+  border-left: 4px solid var(--error-500);
+}
+
+.alert-item.warning {
+  background-color: var(--warning-50);
+  border-left: 4px solid var(--warning-500);
+}
+
+.alert-item.info {
+  background-color: var(--info-50);
+  border-left: 4px solid var(--info-500);
+}
+
+.alert-icon {
+  font-size: var(--text-lg);
+}
+
+.alert-info {
+  flex: 1;
+}
+
+.alert-title {
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.alert-time {
+  font-size: var(--text-xs);
+  color: var(--gray-500);
+}
+
+/* 快捷操作面板 */
+.shortcuts-content {
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.shortcut-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  color: inherit;
+}
+
+.shortcut-item:hover {
+  border-color: var(--primary-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.shortcut-icon {
+  font-size: var(--text-2xl);
+}
+
+.shortcut-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--gray-700);
+  text-align: center;
+}
+
+/* 响应式适配 */
+@media (max-width: 1024px) {
+  .analytics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  
+  .shortcuts-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-4);
+  }
+  
+  .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  
+  .chart-controls {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .chart-content {
+    height: 160px;
+  }
+  
+  .chart-legend {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .ranking-item {
+    gap: var(--space-3);
+  }
+  
+  .ranking-position {
+    width: 28px;
+    height: 28px;
+    font-size: var(--text-xs);
+  }
+  
+  .alert-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  
+  .shortcuts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .shortcut-item {
+    padding: var(--space-3);
+  }
+  
+  .shortcut-icon {
+    font-size: var(--text-xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .data-card {
+    padding: var(--space-4);
+  }
+  
+  .data-card-value {
+    font-size: var(--text-xl);
+  }
+  
+  .chart-card {
+    margin: 0 -1rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

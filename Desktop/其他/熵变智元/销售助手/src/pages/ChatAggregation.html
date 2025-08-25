@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI客服 - 聚合聊天</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/chat.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <img src="../assets/logo.svg" alt="熵变智元" class="logo">
+                <h1 class="logo-text">熵变智元AI销售助手</h1>
+            </div>
+            
+            <nav class="main-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <svg class="nav-icon">📊</svg>
+                    <span>主控面板</span>
+                </a>
+                <a href="chat-aggregation.html" class="nav-item active">
+                    <svg class="nav-icon">💬</svg>
+                    <span>AI客服</span>
+                </a>
+                <a href="sop-management.html" class="nav-item">
+                    <svg class="nav-icon">🤖</svg>
+                    <span>AI销售</span>
+                </a>
+                <a href="moments-marketing.html" class="nav-item">
+                    <svg class="nav-icon">🌟</svg>
+                    <span>朋友圈营销</span>
+                </a>
+                <a href="backend-admin.html" class="nav-item">
+                    <svg class="nav-icon">⚙️</svg>
+                    <span>后台管理</span>
+                </a>
+            </nav>
+            
+            <div class="user-section">
+                <div class="computing-power">
+                    <svg class="icon">💰</svg>
+                    <span class="label">算力剩余</span>
+                    <span class="value">68%</span>
+                </div>
+                <div class="user-info">
+                    <img src="../assets/user-avatar.jpg" alt="用户头像" class="user-avatar">
+                    <div class="user-details">
+                        <span class="user-name">张三</span>
+                        <span class="user-role">销售经理</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 聊天主界面 - 三栏布局 -->
+    <main class="chat-layout">
+        <!-- 左栏 - 会话列表 -->
+        <aside class="chat-sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">聊天会话</h2>
+                <button class="btn btn-icon" data-tooltip="刷新">🔄</button>
+            </div>
+            
+            <!-- 搜索和筛选 -->
+            <div class="sidebar-filters">
+                <div class="search-box">
+                    <svg class="search-icon">🔍</svg>
+                    <input type="text" class="search-input" placeholder="搜索昵称/备注/群名...">
+                </div>
+                <div class="filter-tabs">
+                    <button class="filter-tab active">全部</button>
+                    <button class="filter-tab">未读</button>
+                    <button class="filter-tab">已托管</button>
+                </div>
+            </div>
+            
+            <!-- 会话列表 -->
+            <div class="conversations-list">
+                <div class="conversation-item active" data-conversation="user-001">
+                    <div class="conversation-avatar">
+                        <img src="../assets/avatars/zhangsan.jpg" alt="张三">
+                    </div>
+                    <div class="conversation-content">
+                        <div class="conversation-header">
+                            <span class="conversation-name">张三</span>
+                            <span class="conversation-time">14:30</span>
+                        </div>
+                        <div class="conversation-preview">好的，我了解了...</div>
+                        <div class="conversation-meta">
+                            <span class="conversation-tag vip">VIP客户</span>
+                            <span class="unread-badge">2</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="conversation-item" data-conversation="group-001">
+                    <div class="conversation-avatar">
+                        <div class="group-avatar">👥</div>
+                    </div>
+                    <div class="conversation-content">
+                        <div class="conversation-header">
+                            <span class="conversation-name">产品讨论群 (25人)</span>
+                            <span class="conversation-time">13:45</span>
+                        </div>
+                        <div class="conversation-preview">📎 [文件] 产品介绍.pdf</div>
+                        <div class="conversation-meta">
+                            <span class="conversation-tag group">群聊</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="conversation-item intervention-needed" data-conversation="user-002">
+                    <div class="conversation-avatar">
+                        <img src="../assets/avatars/lisi.jpg" alt="李四">
+                        <div class="alert-indicator">⚠️</div>
+                    </div>
+                    <div class="conversation-content">
+                        <div class="conversation-header">
+                            <span class="conversation-name">李四</span>
+                            <span class="conversation-time">12:20</span>
+                        </div>
+                        <div class="conversation-preview">价格是多少？</div>
+                        <div class="conversation-meta">
+                            <span class="conversation-tag potential">潜在客户</span>
+                            <span class="unread-badge">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 中栏 - 聊天窗口 -->
+        <section class="chat-main">
+            <div class="chat-header">
+                <div class="chat-user-info">
+                    <img src="../assets/avatars/zhangsan.jpg" alt="张三" class="chat-avatar">
+                    <div class="chat-user-details">
+                        <h3 class="chat-user-name">张三</h3>
+                        <span class="chat-user-status">VIP客户 • 最后在线: 2分钟前</span>
+                    </div>
+                </div>
+                <div class="chat-controls">
+                    <div class="ai-toggle-container">
+                        <label class="ai-toggle">
+                            <input type="checkbox" checked class="ai-toggle-input">
+                            <span class="ai-toggle-slider">
+                                <span class="ai-toggle-label active">🤖 AI接管中</span>
+                                <span class="ai-toggle-label inactive">👤 人工模式</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 聊天消息区域 -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- 接收消息 -->
+                <div class="chat-message chat-message-received">
+                    <div class="message-avatar">
+                        <img src="../assets/avatars/zhangsan.jpg" alt="张三">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">张三</span>
+                            <span class="message-time">14:25</span>
+                        </div>
+                        <div class="message-body">
+                            <p>你们这个产品的价格是多少？</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI回复消息 -->
+                <div class="chat-message chat-message-sent">
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">🤖 AI助手</span>
+                            <span class="message-time">14:26</span>
+                        </div>
+                        <div class="message-body">
+                            <p>感谢您的咨询！我们的产品有多个版本，价格根据功能不同有所差异。基础版本1980元/年，专业版3980元/年，企业版6980元/年。每个版本都有不同的功能特色，我可以为您详细介绍一下吗？</p>
+                        </div>
+                        <div class="message-status">
+                            <svg class="icon-sent">✓</svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 新消息 -->
+                <div class="chat-message chat-message-received">
+                    <div class="message-avatar">
+                        <img src="../assets/avatars/zhangsan.jpg" alt="张三">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">张三</span>
+                            <span class="message-time">14:30</span>
+                        </div>
+                        <div class="message-body">
+                            <p>有没有优惠活动？</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 人工介入提醒 -->
+                <div class="chat-message chat-message-system">
+                    <div class="message-content">
+                        <div class="system-alert">
+                            ⚠️ AI检测到价格敏感话题，建议人工介入处理
+                            <button class="btn btn-sm btn-primary intervention-btn">立即接管</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 消息输入区域 -->
+            <div class="chat-input-area">
+                <div class="input-toolbar">
+                    <button class="toolbar-btn" data-tooltip="表情">😊</button>
+                    <button class="toolbar-btn" data-tooltip="图片">🖼️</button>
+                    <button class="toolbar-btn" data-tooltip="文件">📎</button>
+                    <button class="toolbar-btn" data-tooltip="物料库">📚</button>
+                </div>
+                <div class="input-container">
+                    <textarea class="message-input" placeholder="输入消息..." rows="2"></textarea>
+                    <button class="send-btn">
+                        <svg class="send-icon">📤</svg>
+                    </button>
+                </div>
+                <div class="input-tips">
+                    <span class="tip">按 Enter 发送，Shift + Enter 换行</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 右栏 - 上下文信息面板 -->
+        <aside class="chat-context">
+            <div class="context-header">
+                <h3 class="context-title">联系人信息</h3>
+                <button class="btn btn-icon" data-tooltip="编辑">✏️</button>
+            </div>
+            
+            <!-- AI控制状态 -->
+            <div class="ai-control-panel">
+                <div class="control-header">
+                    <h4>🤖 AI接管状态</h4>
+                </div>
+                <div class="control-status active">
+                    <div class="status-indicator">
+                        <span class="status-dot active"></span>
+                        <span class="status-text">AI智能回复已启用</span>
+                    </div>
+                    <div class="status-actions">
+                        <button class="btn btn-sm btn-secondary">切换人工</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 客户信息 -->
+            <div class="context-section">
+                <h4 class="section-title">👤 客户信息</h4>
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-label">微信昵称:</span>
+                        <span class="info-value">张三</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">微信号:</span>
+                        <span class="info-value">zhangsan_001</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">备注:</span>
+                        <span class="info-value">VIP客户</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">所属分组:</span>
+                        <span class="info-value">高意向客户</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 标签管理 -->
+            <div class="context-section">
+                <h4 class="section-title">🏷️ 标签管理</h4>
+                <div class="tags-container">
+                    <span class="tag tag-vip">VIP客户</span>
+                    <span class="tag tag-paid">已付费</span>
+                    <button class="tag tag-add">+ 添加</button>
+                </div>
+            </div>
+            
+            <!-- 历史任务记录 -->
+            <div class="context-section">
+                <h4 class="section-title">📋 历史任务记录</h4>
+                <div class="task-list">
+                    <div class="task-item completed">
+                        <div class="task-status">✅</div>
+                        <div class="task-info">
+                            <div class="task-name">新客户破冰SOP</div>
+                            <div class="task-time">已完成 • 3天前</div>
+                        </div>
+                    </div>
+                    <div class="task-item in-progress">
+                        <div class="task-status">⏳</div>
+                        <div class="task-info">
+                            <div class="task-name">产品介绍推送</div>
+                            <div class="task-time">进行中 • 明天执行</div>
+                        </div>
+                    </div>
+                    <div class="task-item scheduled">
+                        <div class="task-status">📅</div>
+                        <div class="task-info">
+                            <div class="task-name">节日问候</div>
+                            <div class="task-time">计划中 • 明天 09:00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 快捷操作 -->
+            <div class="context-section">
+                <h4 class="section-title">🔧 快捷操作</h4>
+                <div class="quick-actions">
+                    <button class="btn btn-sm btn-secondary btn-block">修改备注</button>
+                    <button class="btn btn-sm btn-secondary btn-block">加入分组</button>
+                    <button class="btn btn-sm btn-primary btn-block">创建任务</button>
+                    <button class="btn btn-sm btn-ghost btn-block">查看详情</button>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- 物料库选择模态框 -->
+    <div class="modal-overlay" id="materialModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">选择物料</h3>
+                <button class="modal-close" onclick="closeMaterialModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="material-tabs">
+                    <button class="material-tab active">文本话术</button>
+                    <button class="material-tab">图片素材</button>
+                    <button class="material-tab">小程序</button>
+                </div>
+                <div class="material-list">
+                    <div class="material-item">
+                        <div class="material-preview">📝</div>
+                        <div class="material-info">
+                            <div class="material-title">产品介绍话术</div>
+                            <div class="material-desc">我们的产品具有以下特色...</div>
+                        </div>
+                        <button class="btn btn-sm btn-primary">选择</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 脚本文件 -->
+    <script src="../scripts/chat.js"></script>
+    <script src="../scripts/websocket.js"></script>
+    <script src="../scripts/common.js"></script>
+</body>
+</html>
+

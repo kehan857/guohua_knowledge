@@ -1,0 +1,152 @@
+# 熵变智元AI销售助手 - 配置映射
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-sales-assistant-config
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: config
+data:
+  # 应用配置
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  HOST: "0.0.0.0"
+  PORT: "8000"
+  
+  # 数据库配置
+  DATABASE_URL: "postgresql://ai_sales_user:$(DB_PASSWORD)@postgres-service:5432/ai_sales_db"
+  REDIS_URL: "redis://:$(REDIS_PASSWORD)@redis-service:6379/0"
+  
+  # 外部服务配置
+  GEWE_BASE_URL: "https://api.gewe.com"
+  FASTGPT_BASE_URL: "https://api.fastgpt.com"
+  GEWE_TIMEOUT: "30"
+  FASTGPT_TIMEOUT: "60"
+  FASTGPT_MAX_CONCURRENT: "10"
+  
+  # 监控配置
+  MONITORING_ENABLED: "true"
+  MONITORING_INTERVAL: "30"
+  METRICS_RETENTION_DAYS: "7"
+  ALERT_RETENTION_DAYS: "30"
+  
+  # WebSocket配置
+  WEBSOCKET_HEARTBEAT_INTERVAL: "30"
+  WEBSOCKET_TIMEOUT: "60"
+  WEBSOCKET_MAX_CONNECTIONS_PER_USER: "5"
+  
+  # 缓存配置
+  CACHE_TTL: "300"
+  CACHE_PREFIX: "ai_sales_assistant"
+  
+  # 安全配置
+  RATE_LIMIT_REQUESTS: "100"
+  RATE_LIMIT_WINDOW: "60"
+  
+  # 文件配置
+  UPLOAD_DIR: "/app/uploads"
+  MAX_FILE_SIZE: "10485760"  # 10MB
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: nginx
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+    error_log /var/log/nginx/error.log notice;
+    pid /var/run/nginx.pid;
+
+    events {
+        worker_connections 1024;
+        use epoll;
+        multi_accept on;
+    }
+
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+
+        access_log /var/log/nginx/access.log main;
+
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+        server_tokens off;
+
+        client_max_body_size 10M;
+        
+        gzip on;
+        gzip_vary on;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss application/atom+xml image/svg+xml;
+
+        upstream backend {
+            server ai-sales-assistant-service:8000;
+            keepalive 32;
+        }
+
+        server {
+            listen 80;
+            server_name _;
+
+            location /api/ {
+                proxy_pass http://backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+            }
+
+            location /ws/ {
+                proxy_pass http://backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+                proxy_cache_bypass $http_upgrade;
+                
+                proxy_connect_timeout 4s;
+                proxy_send_timeout 12s;
+                proxy_read_timeout 12s;
+            }
+
+            location /health {
+                proxy_pass http://backend;
+                access_log off;
+            }
+
+            location / {
+                proxy_pass http://backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }
+    }
+

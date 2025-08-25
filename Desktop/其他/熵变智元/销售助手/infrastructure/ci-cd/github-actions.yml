@@ -1,0 +1,519 @@
+# 熵变智元AI销售助手 GitHub Actions CI/CD 工作流
+
+name: AI Sales Assistant CI/CD
+
+on:
+  # 推送触发
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  
+  # PR触发
+  pull_request:
+    branches: [ main, develop ]
+  
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: '部署环境'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - dev
+        - staging
+        - production
+      skip_tests:
+        description: '跳过测试'
+        required: false
+        default: false
+        type: boolean
+
+# 环境变量
+env:
+  PROJECT_NAME: ai-sales-assistant
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  PYTHON_VERSION: '3.11'
+
+# 任务并发控制
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 1. 代码质量检查
+  code-quality:
+    name: 代码质量检查
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r fastapi-backend/requirements.txt
+        pip install flake8 black mypy bandit safety
+    
+    - name: 代码格式检查
+      run: |
+        black --check --diff fastapi-backend/
+        
+    - name: 代码风格检查
+      run: |
+        flake8 fastapi-backend/ --max-line-length=120 --ignore=E203,W503
+    
+    - name: 类型检查
+      run: |
+        cd fastapi-backend
+        mypy . --ignore-missing-imports
+    
+    - name: 安全检查
+      run: |
+        bandit -r fastapi-backend/ -f json -o bandit-report.json
+        safety check --json --output safety-report.json
+      continue-on-error: true
+    
+    - name: 生成版本号
+      id: version
+      run: |
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+        else
+          VERSION=main-${GITHUB_SHA::8}
+        fi
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "Generated version: ${VERSION}"
+    
+    - name: 上传安全报告
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+      if: always()
+
+  # 2. 单元测试
+  unit-tests:
+    name: 单元测试
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_tests }}
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r fastapi-backend/requirements.txt
+        pip install pytest pytest-asyncio pytest-cov pytest-mock
+    
+    - name: 运行单元测试
+      env:
+        TESTING: true
+        DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+        REDIS_URL: redis://localhost:6379/0
+        SECRET_KEY: test-secret-key-for-testing-only
+      run: |
+        cd fastapi-backend
+        python -m pytest tests/unit/ \
+          --junitxml=test-results.xml \
+          --cov=app \
+          --cov-report=xml \
+          --cov-report=html \
+          --cov-fail-under=80 \
+          -v
+    
+    - name: 上传测试结果
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: |
+          fastapi-backend/test-results.xml
+          fastapi-backend/htmlcov/
+          fastapi-backend/coverage.xml
+      if: always()
+    
+    - name: 发布测试结果
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
+      with:
+        name: 单元测试结果
+        path: fastapi-backend/test-results.xml
+        reporter: java-junit
+
+  # 3. 集成测试
+  integration-tests:
+    name: 集成测试
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_tests }}
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: 启动测试环境
+      run: |
+        # 复制环境配置
+        cp infrastructure/docker/env.example .env
+        
+        # 启动测试环境
+        docker-compose -f infrastructure/docker/docker-compose.yml up -d
+        
+        # 等待服务启动
+        sleep 60
+    
+    - name: 运行集成测试
+      run: |
+        # 安装测试依赖
+        python -m pip install --upgrade pip
+        pip install -r fastapi-backend/requirements.txt
+        pip install pytest pytest-asyncio httpx
+        
+        # 运行集成测试
+        cd fastapi-backend
+        python -m pytest tests/integration/ -v
+    
+    - name: 清理测试环境
+      run: |
+        docker-compose -f infrastructure/docker/docker-compose.yml down
+        docker system prune -f
+      if: always()
+
+  # 4. 安全扫描
+  security-scan:
+    name: 安全扫描
+    runs-on: ubuntu-latest
+    needs: [code-quality]
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: 构建测试镜像
+      uses: docker/build-push-action@v5
+      with:
+        context: fastapi-backend
+        file: infrastructure/docker/Dockerfile
+        tags: ${{ env.PROJECT_NAME }}:security-scan
+        load: true
+    
+    - name: 运行Trivy容器扫描
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.PROJECT_NAME }}:security-scan
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: 上传Trivy扫描结果
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+      if: always()
+
+  # 5. 构建镜像
+  build-image:
+    name: 构建Docker镜像
+    runs-on: ubuntu-latest
+    needs: [code-quality, unit-tests]
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      digest: ${{ steps.build.outputs.digest }}
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: 登录Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: 提取元数据
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: 构建并推送镜像
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: fastapi-backend
+        file: infrastructure/docker/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64,linux/arm64
+    
+    - name: 生成镜像信息
+      id: image
+      run: |
+        echo "image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.code-quality.outputs.version }}" >> $GITHUB_OUTPUT
+
+  # 6. 部署到开发环境
+  deploy-dev:
+    name: 部署到开发环境
+    runs-on: ubuntu-latest
+    needs: [build-image]
+    if: github.ref == 'refs/heads/develop' || inputs.environment == 'dev'
+    environment: 
+      name: development
+      url: http://dev-api.yourdomain.com
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 部署到开发环境
+      run: |
+        echo "🚀 部署到开发环境..."
+        echo "镜像: ${{ needs.build-image.outputs.image }}"
+        
+        # 这里添加实际的部署逻辑
+        # 例如：kubectl apply、helm upgrade等
+    
+    - name: 健康检查
+      run: |
+        echo "✅ 验证部署..."
+        # curl -f http://dev-api.yourdomain.com/health
+
+  # 7. 部署到预发布环境
+  deploy-staging:
+    name: 部署到预发布环境
+    runs-on: ubuntu-latest
+    needs: [build-image, unit-tests, integration-tests]
+    if: github.ref == 'refs/heads/main' || inputs.environment == 'staging'
+    environment: 
+      name: staging
+      url: https://staging-api.yourdomain.com
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 配置kubectl
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+    
+    - name: 部署到Kubernetes
+      run: |
+        echo "🚀 部署到预发布环境..."
+        
+        # 更新镜像标签
+        kubectl set image deployment/ai-sales-assistant \
+          ai-sales-assistant=${{ needs.build-image.outputs.image }} \
+          -n ai-sales-assistant-staging
+        
+        # 等待部署完成
+        kubectl rollout status deployment/ai-sales-assistant \
+          -n ai-sales-assistant-staging \
+          --timeout=300s
+    
+    - name: 健康检查
+      run: |
+        echo "✅ 验证部署..."
+        curl -f https://staging-api.yourdomain.com/health
+    
+    - name: 运行烟雾测试
+      run: |
+        echo "🧪 运行烟雾测试..."
+        # 添加烟雾测试脚本
+
+  # 8. 部署到生产环境
+  deploy-production:
+    name: 部署到生产环境
+    runs-on: ubuntu-latest
+    needs: [build-image, unit-tests, integration-tests, security-scan]
+    if: startsWith(github.ref, 'refs/tags/') || inputs.environment == 'production'
+    environment: 
+      name: production
+      url: https://api.yourdomain.com
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 配置kubectl
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG_PROD }}
+    
+    - name: 备份当前版本
+      run: |
+        echo "📦 备份当前版本..."
+        kubectl get deployment ai-sales-assistant \
+          -n ai-sales-assistant \
+          -o yaml > backup-deployment.yaml
+    
+    - name: 部署到生产环境
+      run: |
+        echo "🚀 部署到生产环境..."
+        
+        # 蓝绿部署或滚动更新
+        kubectl set image deployment/ai-sales-assistant \
+          ai-sales-assistant=${{ needs.build-image.outputs.image }} \
+          -n ai-sales-assistant
+        
+        # 等待部署完成
+        kubectl rollout status deployment/ai-sales-assistant \
+          -n ai-sales-assistant \
+          --timeout=600s
+    
+    - name: 健康检查
+      run: |
+        echo "✅ 验证生产环境..."
+        curl -f https://api.yourdomain.com/health
+    
+    - name: 运行生产测试
+      run: |
+        echo "🧪 运行生产验证测试..."
+        # 添加生产验证脚本
+    
+    - name: 创建GitHub Release
+      uses: actions/create-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          🚀 AI销售助手版本发布
+          
+          **镜像**: ${{ needs.build-image.outputs.image }}
+          **提交**: ${{ github.sha }}
+          
+          ## 更新内容
+          请查看提交历史获取详细更新内容。
+        draft: false
+        prerelease: false
+
+  # 9. 性能测试
+  performance-test:
+    name: 性能测试
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+    
+    - name: 设置Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: 安装K6
+      run: |
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+        echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+        sudo apt-get update
+        sudo apt-get install k6
+    
+    - name: 运行性能测试
+      run: |
+        echo "⚡ 运行性能测试..."
+        # k6 run tests/performance/load-test.js
+    
+    - name: 上传性能报告
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-report
+        path: performance-report.html
+      if: always()
+
+  # 10. 通知
+  notify:
+    name: 发送通知
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: always()
+    
+    steps:
+    - name: 发送Slack通知
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#devops'
+        text: |
+          🚀 AI销售助手部署完成
+          
+          **状态**: ${{ job.status }}
+          **版本**: ${{ needs.code-quality.outputs.version }}
+          **分支**: ${{ github.ref }}
+          **提交**: ${{ github.sha }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()
+

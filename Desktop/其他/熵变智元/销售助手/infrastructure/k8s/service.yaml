@@ -1,0 +1,174 @@
+# 熵变智元AI销售助手 - 服务配置
+
+# 主应用服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-sales-assistant-service
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: backend
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: ai-sales-assistant
+    component: backend
+
+---
+# Nginx服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: nginx
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+  selector:
+    app: ai-sales-assistant
+    component: nginx
+
+---
+# PostgreSQL服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: database
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: ai-sales-assistant
+    component: database
+
+---
+# Redis服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: cache
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: ai-sales-assistant
+    component: cache
+
+---
+# Prometheus监控服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: monitoring
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: prometheus
+  selector:
+    app: ai-sales-assistant
+    component: monitoring
+
+---
+# Grafana可视化服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: visualization
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: grafana
+  selector:
+    app: ai-sales-assistant
+    component: visualization
+
+---
+# Headless服务用于StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-headless
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: database
+spec:
+  clusterIP: None
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: ai-sales-assistant
+    component: database
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-headless
+  namespace: ai-sales-assistant
+  labels:
+    app: ai-sales-assistant
+    component: cache
+spec:
+  clusterIP: None
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: ai-sales-assistant
+    component: cache
+

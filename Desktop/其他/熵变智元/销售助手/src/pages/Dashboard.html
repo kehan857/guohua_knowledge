@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>熵变智元AI销售助手 - 主控面板</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/dashboard.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-container">
+            <!-- Logo区域 -->
+            <div class="logo-section">
+                <img src="../assets/logo.svg" alt="熵变智元" class="logo">
+                <h1 class="logo-text">熵变智元AI销售助手</h1>
+            </div>
+            
+            <!-- 主导航 -->
+            <nav class="main-nav">
+                <a href="dashboard.html" class="nav-item active">
+                    <svg class="nav-icon">📊</svg>
+                    <span>主控面板</span>
+                </a>
+                <a href="chat-aggregation.html" class="nav-item">
+                    <svg class="nav-icon">💬</svg>
+                    <span>AI客服</span>
+                </a>
+                <a href="sop-management.html" class="nav-item">
+                    <svg class="nav-icon">🤖</svg>
+                    <span>AI销售</span>
+                </a>
+                <a href="moments-marketing.html" class="nav-item">
+                    <svg class="nav-icon">🌟</svg>
+                    <span>朋友圈营销</span>
+                </a>
+                <a href="backend-admin.html" class="nav-item">
+                    <svg class="nav-icon">⚙️</svg>
+                    <span>后台管理</span>
+                </a>
+            </nav>
+            
+            <!-- 用户信息区域 -->
+            <div class="user-section">
+                <div class="computing-power">
+                    <svg class="icon">💰</svg>
+                    <span class="label">算力剩余</span>
+                    <span class="value">68%</span>
+                </div>
+                <div class="user-info">
+                    <img src="../assets/user-avatar.jpg" alt="用户头像" class="user-avatar">
+                    <div class="user-details">
+                        <span class="user-name">张三</span>
+                        <span class="user-role">销售经理</span>
+                    </div>
+                    <div class="user-menu">
+                        <button class="btn btn-icon" data-tooltip="设置">⚙️</button>
+                        <button class="btn btn-icon" data-tooltip="退出">🚪</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="container">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h2 class="page-title">主控面板</h2>
+                <div class="page-actions">
+                    <button class="btn btn-secondary">
+                        <svg class="icon">📊</svg>
+                        生成报告
+                    </button>
+                    <button class="btn btn-primary">
+                        <svg class="icon">➕</svg>
+                        快速添加设备
+                    </button>
+                </div>
+            </div>
+
+            <!-- 核心指标卡片区域 -->
+            <section class="metrics-section">
+                <div class="metrics-grid">
+                    <!-- 在线账号数 -->
+                    <div class="data-card" onclick="navigateTo('device-management.html')">
+                        <div class="data-card-header">
+                            <h3 class="data-card-title">在线账号数</h3>
+                            <svg class="data-card-icon">📱</svg>
+                        </div>
+                        <div class="data-card-content">
+                            <div class="data-card-value">8/12</div>
+                            <div class="data-card-trend positive">
+                                <svg class="trend-icon">↗</svg>
+                                <span>+2.3%</span>
+                            </div>
+                        </div>
+                        <div class="data-card-footer">
+                            <span class="data-card-subtitle">🟢 实时状态</span>
+                        </div>
+                    </div>
+
+                    <!-- 今日消息量 -->
+                    <div class="data-card" onclick="navigateTo('chat-aggregation.html')">
+                        <div class="data-card-header">
+                            <h3 class="data-card-title">今日消息量</h3>
+                            <svg class="data-card-icon">💬</svg>
+                        </div>
+                        <div class="data-card-content">
+                            <div class="data-card-value">
+                                <span class="value-primary">收 156</span>
+                                <span class="value-secondary">发 89</span>
+                            </div>
+                            <div class="data-card-trend positive">
+                                <svg class="trend-icon">↗</svg>
+                                <span>+15.7%</span>
+                            </div>
+                        </div>
+                        <div class="data-card-footer">
+                            <span class="data-card-subtitle">📊 增长趋势良好</span>
+                        </div>
+                    </div>
+
+                    <!-- 进行中任务 -->
+                    <div class="data-card" onclick="navigateTo('sop-management.html')">
+                        <div class="data-card-header">
+                            <h3 class="data-card-title">进行中任务</h3>
+                            <svg class="data-card-icon">📋</svg>
+                        </div>
+                        <div class="data-card-content">
+                            <div class="data-card-value">15</div>
+                            <div class="data-card-trend neutral">
+                                <svg class="trend-icon">➖</svg>
+                                <span>持平</span>
+                            </div>
+                        </div>
+                        <div class="data-card-footer">
+                            <span class="data-card-subtitle">📈 执行顺利</span>
+                        </div>
+                    </div>
+
+                    <!-- 本月算力 -->
+                    <div class="data-card" onclick="navigateTo('cost-management.html')">
+                        <div class="data-card-header">
+                            <h3 class="data-card-title">本月算力</h3>
+                            <svg class="data-card-icon">💰</svg>
+                        </div>
+                        <div class="data-card-content">
+                            <div class="data-card-value">68%</div>
+                            <div class="budget-progress">
+                                <div class="progress-bar progress-warning">
+                                    <div class="progress-track">
+                                        <div class="progress-fill" style="width: 68%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="data-card-footer">
+                            <span class="data-card-subtitle">💡 使用合理</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 数据可视化区域 -->
+            <section class="analytics-section">
+                <div class="analytics-grid">
+                    <!-- 消息量趋势图 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">消息量趋势</h3>
+                            <div class="chart-controls">
+                                <button class="btn btn-sm btn-ghost active">7天</button>
+                                <button class="btn btn-sm btn-ghost">30天</button>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="messageChart" class="chart-canvas"></canvas>
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #3b82f6"></span>
+                                <span class="legend-label">接收消息</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #10b981"></span>
+                                <span class="legend-label">发送消息</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 算力消耗排行榜 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">算力消耗排行</h3>
+                            <button class="btn btn-sm btn-ghost">查看详情</button>
+                        </div>
+                        <div class="ranking-content">
+                            <div class="ranking-item">
+                                <div class="ranking-position">1</div>
+                                <div class="ranking-info">
+                                    <div class="ranking-name">张三</div>
+                                    <div class="ranking-dept">销售部</div>
+                                </div>
+                                <div class="ranking-usage">
+                                    <div class="usage-amount">$32.45</div>
+                                    <div class="usage-bar">
+                                        <div class="usage-fill" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="ranking-position">2</div>
+                                <div class="ranking-info">
+                                    <div class="ranking-name">李四</div>
+                                    <div class="ranking-dept">销售部</div>
+                                </div>
+                                <div class="ranking-usage">
+                                    <div class="usage-amount">$28.90</div>
+                                    <div class="usage-bar">
+                                        <div class="usage-fill" style="width: 58%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ranking-item">
+                                <div class="ranking-position">3</div>
+                                <div class="ranking-info">
+                                    <div class="ranking-name">王五</div>
+                                    <div class="ranking-dept">客服部</div>
+                                </div>
+                                <div class="ranking-usage">
+                                    <div class="usage-amount">$22.15</div>
+                                    <div class="usage-bar">
+                                        <div class="usage-fill" style="width: 44%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统告警列表 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">系统告警</h3>
+                            <button class="btn btn-sm btn-ghost">查看全部</button>
+                        </div>
+                        <div class="alerts-content">
+                            <div class="alert-item urgent">
+                                <div class="alert-icon">🔴</div>
+                                <div class="alert-info">
+                                    <div class="alert-title">李销售微信异常掉线</div>
+                                    <div class="alert-time">2分钟前</div>
+                                </div>
+                                <button class="btn btn-sm btn-primary">处理</button>
+                            </div>
+                            <div class="alert-item warning">
+                                <div class="alert-icon">🟠</div>
+                                <div class="alert-info">
+                                    <div class="alert-title">王助理微信网络不稳定</div>
+                                    <div class="alert-time">5分钟前</div>
+                                </div>
+                                <button class="btn btn-sm btn-secondary">查看</button>
+                            </div>
+                            <div class="alert-item info">
+                                <div class="alert-icon">🟡</div>
+                                <div class="alert-info">
+                                    <div class="alert-title">赵顾问微信需要重新登录</div>
+                                    <div class="alert-time">10分钟前</div>
+                                </div>
+                                <button class="btn btn-sm btn-ghost">忽略</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 快捷操作面板 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">快捷操作</h3>
+                        </div>
+                        <div class="shortcuts-content">
+                            <div class="shortcuts-grid">
+                                <button class="shortcut-item" onclick="showQRCodeModal()">
+                                    <div class="shortcut-icon">📱</div>
+                                    <div class="shortcut-label">获取登录码</div>
+                                </button>
+                                <button class="shortcut-item" onclick="createNewTask()">
+                                    <div class="shortcut-icon">📋</div>
+                                    <div class="shortcut-label">创建任务</div>
+                                </button>
+                                <button class="shortcut-item" onclick="emergencyIntervention()">
+                                    <div class="shortcut-icon">🚨</div>
+                                    <div class="shortcut-label">紧急介入</div>
+                                </button>
+                                <button class="shortcut-item" onclick="navigateTo('moments-marketing.html')">
+                                    <div class="shortcut-icon">🌟</div>
+                                    <div class="shortcut-label">发朋友圈</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 脚本文件 -->
+    <script src="../scripts/chart.min.js"></script>
+    <script src="../scripts/dashboard.js"></script>
+    <script src="../scripts/common.js"></script>
+</body>
+</html>
+

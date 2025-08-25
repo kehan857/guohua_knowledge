@@ -1,0 +1,15 @@
+# 熵变智元AI销售助手 - Kubernetes命名空间
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-sales-assistant
+  labels:
+    name: ai-sales-assistant
+    app: ai-sales-assistant
+    environment: production
+    version: "1.0.0"
+  annotations:
+    description: "熵变智元AI销售助手生产环境"
+    contact: "devops@yourcompany.com"
+

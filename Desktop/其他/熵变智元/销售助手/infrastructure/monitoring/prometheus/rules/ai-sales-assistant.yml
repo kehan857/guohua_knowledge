@@ -1,0 +1,262 @@
+# AI销售助手 Prometheus告警规则
+
+groups:
+  # 应用服务告警
+  - name: ai-sales-assistant.rules
+    rules:
+    # 服务可用性告警
+    - alert: ServiceDown
+      expr: up{job="ai-sales-assistant"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        service: ai-sales-assistant
+      annotations:
+        summary: "AI销售助手服务不可用"
+        description: "服务 {{ $labels.instance }} 已经停止响应超过1分钟"
+
+    # 高错误率告警
+    - alert: HighErrorRate
+      expr: |
+        (
+          rate(http_requests_total{job="ai-sales-assistant",status=~"5.."}[5m]) /
+          rate(http_requests_total{job="ai-sales-assistant"}[5m])
+        ) > 0.1
+      for: 2m
+      labels:
+        severity: warning
+        service: ai-sales-assistant
+      annotations:
+        summary: "AI销售助手错误率过高"
+        description: "服务 {{ $labels.instance }} 错误率为 {{ $value | humanizePercentage }}"
+
+    # 响应时间过长告警
+    - alert: HighResponseTime
+      expr: |
+        histogram_quantile(0.95, 
+          rate(http_request_duration_seconds_bucket{job="ai-sales-assistant"}[5m])
+        ) > 5
+      for: 2m
+      labels:
+        severity: warning
+        service: ai-sales-assistant
+      annotations:
+        summary: "AI销售助手响应时间过长"
+        description: "服务 {{ $labels.instance }} 95%分位响应时间为 {{ $value }}秒"
+
+    # CPU使用率过高告警
+    - alert: HighCPUUsage
+      expr: |
+        (
+          rate(container_cpu_usage_seconds_total{pod=~"ai-sales-assistant-.*"}[5m]) * 100
+        ) > 80
+      for: 5m
+      labels:
+        severity: warning
+        service: ai-sales-assistant
+      annotations:
+        summary: "AI销售助手CPU使用率过高"
+        description: "Pod {{ $labels.pod }} CPU使用率为 {{ $value | humanizePercentage }}"
+
+    # 内存使用率过高告警
+    - alert: HighMemoryUsage
+      expr: |
+        (
+          container_memory_working_set_bytes{pod=~"ai-sales-assistant-.*"} /
+          container_spec_memory_limit_bytes{pod=~"ai-sales-assistant-.*"}
+        ) > 0.8
+      for: 5m
+      labels:
+        severity: warning
+        service: ai-sales-assistant
+      annotations:
+        summary: "AI销售助手内存使用率过高"
+        description: "Pod {{ $labels.pod }} 内存使用率为 {{ $value | humanizePercentage }}"
+
+    # 外部服务连接失败告警
+    - alert: ExternalServiceConnectionFailed
+      expr: |
+        external_service_connection_errors_total{service=~"gewe|fastgpt"} > 0
+      for: 1m
+      labels:
+        severity: critical
+        service: external
+      annotations:
+        summary: "外部服务连接失败"
+        description: "{{ $labels.service }} 服务连接失败，错误次数: {{ $value }}"
+
+    # WebSocket连接数过多告警
+    - alert: TooManyWebSocketConnections
+      expr: websocket_connections_total > 1000
+      for: 2m
+      labels:
+        severity: warning
+        service: websocket
+      annotations:
+        summary: "WebSocket连接数过多"
+        description: "当前WebSocket连接数: {{ $value }}"
+
+    # AI成本过高告警
+    - alert: HighAICost
+      expr: |
+        increase(ai_cost_total_dollars[1h]) > 100
+      for: 0m
+      labels:
+        severity: warning
+        service: ai-cost
+      annotations:
+        summary: "AI调用成本过高"
+        description: "过去1小时AI调用成本: ${{ $value }}"
+
+  # 数据库告警
+  - name: database.rules
+    rules:
+    # PostgreSQL服务不可用
+    - alert: PostgreSQLDown
+      expr: up{job="postgres"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        service: database
+      annotations:
+        summary: "PostgreSQL数据库不可用"
+        description: "PostgreSQL服务已停止响应超过1分钟"
+
+    # 数据库连接数过多
+    - alert: TooManyDatabaseConnections
+      expr: |
+        pg_stat_activity_count{datname="ai_sales_db"} > 80
+      for: 2m
+      labels:
+        severity: warning
+        service: database
+      annotations:
+        summary: "数据库连接数过多"
+        description: "数据库连接数: {{ $value }}"
+
+    # 数据库查询响应时间过长
+    - alert: SlowDatabaseQueries
+      expr: |
+        pg_stat_activity_max_tx_duration{datname="ai_sales_db"} > 300
+      for: 1m
+      labels:
+        severity: warning
+        service: database
+      annotations:
+        summary: "数据库查询响应时间过长"
+        description: "最长事务执行时间: {{ $value }}秒"
+
+    # 数据库磁盘使用率过高
+    - alert: DatabaseDiskUsageHigh
+      expr: |
+        (
+          pg_database_size_bytes{datname="ai_sales_db"} /
+          (1024 * 1024 * 1024 * 20)  # 20GB限制
+        ) > 0.8
+      for: 5m
+      labels:
+        severity: warning
+        service: database
+      annotations:
+        summary: "数据库磁盘使用率过高"
+        description: "数据库大小: {{ $value | humanizeBytes }}"
+
+  # Redis缓存告警
+  - name: redis.rules
+    rules:
+    # Redis服务不可用
+    - alert: RedisDown
+      expr: up{job="redis"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        service: cache
+      annotations:
+        summary: "Redis缓存服务不可用"
+        description: "Redis服务已停止响应超过1分钟"
+
+    # Redis内存使用率过高
+    - alert: RedisMemoryHigh
+      expr: |
+        (
+          redis_memory_used_bytes{job="redis"} /
+          redis_memory_max_bytes{job="redis"}
+        ) > 0.8
+      for: 5m
+      labels:
+        severity: warning
+        service: cache
+      annotations:
+        summary: "Redis内存使用率过高"
+        description: "Redis内存使用率: {{ $value | humanizePercentage }}"
+
+    # Redis连接数过多
+    - alert: TooManyRedisConnections
+      expr: redis_connected_clients{job="redis"} > 100
+      for: 2m
+      labels:
+        severity: warning
+        service: cache
+      annotations:
+        summary: "Redis连接数过多"
+        description: "Redis连接数: {{ $value }}"
+
+  # Kubernetes集群告警
+  - name: kubernetes.rules
+    rules:
+    # Pod重启过于频繁
+    - alert: PodCrashLooping
+      expr: |
+        rate(kube_pod_container_status_restarts_total{namespace="ai-sales-assistant"}[15m]) * 60 * 15 > 0
+      for: 5m
+      labels:
+        severity: critical
+        service: kubernetes
+      annotations:
+        summary: "Pod重启过于频繁"
+        description: "Pod {{ $labels.pod }} 在15分钟内重启了 {{ $value }} 次"
+
+    # Pod处于Pending状态
+    - alert: PodPending
+      expr: |
+        kube_pod_status_phase{namespace="ai-sales-assistant",phase="Pending"} == 1
+      for: 2m
+      labels:
+        severity: warning
+        service: kubernetes
+      annotations:
+        summary: "Pod处于Pending状态"
+        description: "Pod {{ $labels.pod }} 处于Pending状态超过2分钟"
+
+    # 节点资源不足
+    - alert: NodeResourcesHigh
+      expr: |
+        (
+          (kube_node_status_allocatable{resource="cpu"} - kube_node_status_capacity{resource="cpu"}) /
+          kube_node_status_allocatable{resource="cpu"}
+        ) > 0.9
+      for: 5m
+      labels:
+        severity: warning
+        service: kubernetes
+      annotations:
+        summary: "节点CPU资源使用率过高"
+        description: "节点 {{ $labels.node }} CPU使用率: {{ $value | humanizePercentage }}"
+
+  # 网络告警
+  - name: network.rules
+    rules:
+    # 网络延迟过高
+    - alert: HighNetworkLatency
+      expr: |
+        histogram_quantile(0.95,
+          rate(prometheus_http_request_duration_seconds_bucket[5m])
+        ) > 1
+      for: 5m
+      labels:
+        severity: warning
+        service: network
+      annotations:
+        summary: "网络延迟过高"
+        description: "95%分位网络延迟: {{ $value }}秒"
+
