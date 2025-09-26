@@ -17,14 +17,17 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
+        cache: false
         
     - name: Install dependencies
       run: |
         echo "Current directory: $(pwd)"
         echo "Files in current directory:"
         ls -la
+        echo "Checking for package-lock.json:"
+        ls -la package-lock.json || echo "package-lock.json not found"
         echo "Installing dependencies..."
-        npm install
+        npm install --no-optional
         
     - name: Build
       run: npm run build
