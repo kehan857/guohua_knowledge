@@ -1,0 +1,61 @@
+name: Fixed Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js environment
+      run: |
+        echo "=== 设置Node.js环境 ==="
+        # 手动安装Node.js 18
+        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        
+        # 验证安装
+        echo "Node.js version:"
+        node --version
+        echo "npm version:"
+        npm --version
+        
+    - name: Fix npm dependencies issue
+      run: |
+        echo "=== 修复npm依赖问题 ==="
+        cd "Desktop/国华知识库"
+        
+        # 删除package-lock.json和node_modules目录
+        echo "删除package-lock.json和node_modules目录..."
+        rm -rf package-lock.json node_modules
+        
+        # 清理npm缓存
+        echo "清理npm缓存..."
+        npm cache clean --force
+        
+        # 重新安装依赖
+        echo "重新安装依赖..."
+        npm install --no-optional --no-audit --no-fund
+        
+    - name: Build project
+      run: |
+        echo "=== 构建项目 ==="
+        cd "Desktop/国华知识库"
+        npm run build
+        
+        # 检查构建结果
+        echo "构建完成，检查dist目录:"
+        ls -la dist/ || echo "dist目录不存在"
+        
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./Desktop/国华知识库/dist
+        force_orphan: true
