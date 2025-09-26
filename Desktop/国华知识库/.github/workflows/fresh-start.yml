@@ -1,4 +1,4 @@
-name: Manual Node Setup
+name: Fresh Start Build
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
       
     - name: Install Node.js manually
       run: |
-        echo "Installing Node.js manually..."
+        echo "=== 手动安装Node.js ==="
         curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
         sudo apt-get install -y nodejs
         echo "Node.js version:"
@@ -25,6 +25,7 @@ jobs:
         
     - name: Install dependencies
       run: |
+        echo "=== 安装依赖 ==="
         echo "Current directory: $(pwd)"
         echo "Files in current directory:"
         ls -la
@@ -34,8 +35,10 @@ jobs:
         npm install --no-optional --no-audit --no-fund
         
     - name: Build
-      run: npm run build
-      
+      run: |
+        echo "=== 构建项目 ==="
+        npm run build
+        
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
