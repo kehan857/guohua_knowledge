@@ -1,0 +1,103 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js environment
+        run: |
+          echo "=== 设置Node.js环境 ==="
+          # 手动安装Node.js 18
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          
+          # 验证安装
+          echo "Node.js version:"
+          node --version
+          echo "npm version:"
+          npm --version
+          
+      - name: Navigate to project directory
+        run: |
+          echo "=== 导航到项目目录 ==="
+          cd "Desktop/国华知识库"
+          echo "现在在项目目录: $(pwd)"
+          echo "检查package.json:"
+          ls -la package.json || echo "package.json不存在"
+          
+      - name: Force clean and reinstall dependencies
+        run: |
+          echo "=== 强制清理并重新安装依赖 ==="
+          cd "Desktop/国华知识库"
+          
+          # 彻底删除所有相关文件
+          echo "删除package-lock.json和node_modules目录..."
+          rm -rf package-lock.json node_modules .npm
+          
+          # 清理npm缓存
+          echo "清理npm缓存..."
+          npm cache clean --force
+          
+          # 删除npm配置
+          echo "重置npm配置..."
+          npm config delete registry || true
+          npm config set registry https://registry.npmjs.org/
+          
+          # 使用yarn作为替代方案
+          echo "安装yarn..."
+          npm install -g yarn
+          
+          # 使用yarn安装依赖
+          echo "使用yarn安装依赖..."
+          yarn install --frozen-lockfile || yarn install
+          
+      - name: Build project
+        run: |
+          echo "=== 构建项目 ==="
+          cd "Desktop/国华知识库"
+          
+          # 使用yarn构建
+          echo "使用yarn构建项目..."
+          yarn build || npm run build
+          
+          # 检查构建结果
+          echo "构建完成，检查dist目录:"
+          ls -la dist/ || echo "dist目录不存在"
+          echo "dist目录内容:"
+          ls -la dist/ || echo "dist目录不存在"
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './Desktop/国华知识库/dist'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
