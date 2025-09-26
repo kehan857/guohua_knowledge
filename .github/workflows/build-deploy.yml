@@ -1,0 +1,66 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js environment
+      run: |
+        echo "=== 设置Node.js环境 ==="
+        # 手动安装Node.js 18
+        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        
+        # 验证安装
+        echo "Node.js version:"
+        node --version
+        echo "npm version:"
+        npm --version
+        
+        # 设置npm配置
+        npm config set registry https://registry.npmjs.org/
+        
+    - name: Install project dependencies
+      run: |
+        echo "=== 安装项目依赖 ==="
+        echo "当前目录: $(pwd)"
+        echo "目录内容:"
+        ls -la
+        
+        # 检查package.json
+        if [ -f package.json ]; then
+          echo "找到package.json文件"
+          cat package.json | head -20
+        else
+          echo "错误: 未找到package.json文件"
+          exit 1
+        fi
+        
+        # 安装依赖
+        echo "开始安装依赖..."
+        npm install --no-optional --no-audit --no-fund --verbose
+        
+    - name: Build project
+      run: |
+        echo "=== 构建项目 ==="
+        npm run build
+        
+        # 检查构建结果
+        echo "构建完成，检查dist目录:"
+        ls -la dist/ || echo "dist目录不存在"
+        
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        force_orphan: true
