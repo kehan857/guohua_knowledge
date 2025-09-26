@@ -1,7 +1,3 @@
-/** WARNING: DON'T EDIT THIS FILE */
-/** WARNING: DON'T EDIT THIS FILE */
-/** WARNING: DON'T EDIT THIS FILE */
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -13,4 +9,5 @@ function getPlugins() {
 
 export default defineConfig({
   plugins: getPlugins(),
+  base: "/guohua_knowledge/", // 设置正确的base路径
 });
