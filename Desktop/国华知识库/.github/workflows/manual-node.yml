@@ -1,4 +1,4 @@
-name: No Cache Build and Deploy
+name: Manual Node Setup
 
 on:
   push:
@@ -13,10 +13,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       
-    - name: Setup Node.js (No Cache)
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+    - name: Install Node.js manually
+      run: |
+        echo "Installing Node.js manually..."
+        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        echo "Node.js version:"
+        node --version
+        echo "npm version:"
+        npm --version
         
     - name: Install dependencies
       run: |
